@@ -119,25 +119,29 @@ Windows: C:/Users/%username%/AppData/Roaming/mpv/
 <details open>
 <summary>🎁 <strong>点击展开/收起  Open/Close</strong></summary>
 
-#### default
+#### Default
 
 ![image](./preview/Snipaste_2026-08-15_00-09-37.jpg)
 
-#### macos-white
+#### macOS-white
 
 ![image](./preview/Snipaste_2026-08-16_01-04-38.jpg)
 
-#### macos-dark
+#### macOS-dark
 
 ![image](./preview/Snipaste_2026-08-16_01-10-14.jpg)
 
-#### teal-blue
+#### Teal-blue
 
 ![image](./preview/Snipaste_2026-09-26_15-31-59.jpg)
 
-#### purple-dark
+#### Purple-dark
 
 ![image](./preview/Snipaste_2026-09-29_00-13-54.jpg)
+
+#### Gray-glass
+
+![image](./preview/Snipaste_2026-10-09_18-32-34.jpg)
 
 </details>
 
