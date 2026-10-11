@@ -53,7 +53,7 @@ Each theme archive contains a complete, fully functional configuration. Simply d
 
 ```
 A typical directory structure looks like this:
-~/mpv/configuration folder
+~/mpv/portable_config
       ├── fonts
       ├── scripts
       ├── script-opts

@@ -58,7 +58,7 @@
 
 ```
 一般的目录结构如下:
-~/mpv/配置文件夹目录
+~/mpv/portable_config
       ├── fonts
       ├── scripts
       ├── script-opts
