@@ -116,28 +116,34 @@ Windows: C:/Users/%username%/AppData/Roaming/mpv/
 > **多种菜单样式可选**  
 > 切换主题配色方法：播放器内右键 > 工具 > 主题 选择对应的名称即可
 
-<details open>
-<summary>🎁 <strong>点击展开/收起  Open/Close</strong></summary>
+![image](./preview/preview.gif)
 
-#### default
+<details>
+<summary>🎁 <strong>点击展开/查看截图  OPEN/SCREENSHOT</strong></summary>
+
+#### Default
 
 ![image](./preview/Snipaste_2026-08-15_00-09-37.jpg)
 
-#### macos-white
+#### macOS-white
 
 ![image](./preview/Snipaste_2026-08-16_01-04-38.jpg)
 
-#### macos-dark
+#### macOS-dark
 
 ![image](./preview/Snipaste_2026-08-16_01-10-14.jpg)
 
-#### teal-blue
+#### Teal-blue
 
 ![image](./preview/Snipaste_2026-09-26_15-31-59.jpg)
 
-#### purple-dark
+#### Purple-dark
 
 ![image](./preview/Snipaste_2026-09-29_00-13-54.jpg)
+
+#### Gray-glass
+
+![image](./preview/Snipaste_2026-10-09_18-32-34.jpg)
 
 </details>
 

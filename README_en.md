@@ -91,7 +91,8 @@ Windows: C:/Users/%username%/AppData/Roaming/mpv/
 
 ## Preview
 
-![image](https://raw.githubusercontent.com/akFace/mpv.net.config/main/preview/Snipaste_2026-09-02_22-25-41.jpg)
+![image](./preview/Snipaste_2026-09-02_22-25-41.jpg)
+![image](./preview/Snipaste_2026-10-10_15-08-58.jpg)
 ![image](https://raw.githubusercontent.com/akFace/mpv.net.config/main/preview/Snipaste_2026-09-02_22-31-00.jpg)
 
 ## Open-source project
