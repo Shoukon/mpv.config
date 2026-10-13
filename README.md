@@ -7,11 +7,17 @@
 
 ![主页](./preview/main.png)
 
+<p align="center">
+  <img alt="mpv 0.40+" src="https://img.shields.io/badge/mpv-0.40%2B-2b2d33?style=flat-square&labelColor=8934D9">
+  <img alt="Windows, macOS, Linux" src="https://img.shields.io/badge/platform-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2b2d33?style=flat-square&labelColor=008040">
+  <img alt="License LGPL-2.1" src="https://img.shields.io/badge/license-LGPL--2.1-2b2d33?style=flat-square&labelColor=C7690C">
+</p>
+
 ### 中文 | [English](https://github.com/akFace/mpv.config/blob/main/README_en.md)
 
 ## 简要说明
 
-- 两套主题皮肤`modernz`、`uosc`，漂亮的现代化 UI 无边框设计
+- 主题皮肤`modernz`、`uosc`、`ModernGlass`，漂亮的现代化 UI 无边框设计
 - 使用原生 mpv 播放器，配置/播放器分离，无需担心播放器无法更新到最新版
 - 集成进度条缩略图预览
 - 集成在线中文字幕搜索，全网弹幕在线加载
@@ -43,6 +49,7 @@
 [🎯 点击下载](https://github.com/akFace/mpv.config/releases) 你需要的主题皮肤，目前提供：
 
 - `modernz`
+- `modern_glass`
 - `uosc`
 
 每个主题皮肤压缩包均包含完整功能的配置，下载后解压。
@@ -84,6 +91,7 @@ Windows: C:/Users/%username%/AppData/Roaming/mpv/
 
 - Uosc 主题自定义文档：[Uosc](https://github.com/tomasklaen/uosc#options)
 - ModernZ 主题自定义文档：[ModernZ](https://github.com/Samillion/ModernZ#customization)
+- ModernGlass 主题自定义文档：[ModernGlass](https://github.com/Demetter/ModernGlass#configuration)
 - 弹幕默认样式在配置文件夹`script-opts/uosc_danmaku.conf`下，要修改请使用文本编辑器打开编辑
 - 弹幕相关配置：[查看文档](https://github.com/Tony15246/uosc_danmaku#%E7%9B%AE%E5%BD%95)
 - **关于弹幕流畅度问题**，目前本人的设备屏幕是 4k60hz，要打开视频同步帧 `display-resample` 才流畅，但有些用户的设备打开此设置开倍速播放会导致声音卡问题，因此现在默认关闭，需要打开的：右键菜单 > 弹幕 > 同步视频帧 即可
@@ -98,13 +106,17 @@ Windows: C:/Users/%username%/AppData/Roaming/mpv/
 
 ## 预览效果图：
 
-### 主题皮肤 1（modernz）
+### 主题皮肤（modernz）
 
 ![image](./preview/Snipaste_2026-03-16_20-32-59.jpg)
 
-### 主题皮肤 2（uosc）
+### 主题皮肤（uosc）
 
 ![image](./preview/Snipaste_2026-08-24_03-00-53.jpg)
+
+### 主题皮肤 （modern_glass）
+
+![image](./preview/Snipaste_2026-10-13_21-06-43.jpg)
 
 ---
 
@@ -175,6 +187,7 @@ Windows: C:/Users/%username%/AppData/Roaming/mpv/
 - [celebi](https://github.com/po5/celebi)
 - [uosc](https://github.com/tomasklaen/uosc)
 - [ModernZ](https://github.com/Samillion/ModernZ)
+- [ModernGlass](https://github.com/Demetter/ModernGlass)
 - [mpv-sub-assrt](https://github.com/dyphire/mpv-sub-assrt)
 - [uosc_danmaku](https://github.com/Tony15246/uosc_danmaku)
 - [Anime4K](https://github.com/bloc97/Anime4K)

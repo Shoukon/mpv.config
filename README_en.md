@@ -1,5 +1,11 @@
 # Ready-to-Use Configuration Files, Elegant UI Themes & Useful Plugins for mpv and mpv.net (Windows, macOS, Linux)
 
+<p align="center">
+  <img alt="mpv 0.40+" src="https://img.shields.io/badge/mpv-0.40%2B-2b2d33?style=flat-square&labelColor=8934D9">
+  <img alt="Windows, macOS, Linux" src="https://img.shields.io/badge/platform-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2b2d33?style=flat-square&labelColor=008040">
+  <img alt="License LGPL-2.1" src="https://img.shields.io/badge/license-LGPL--2.1-2b2d33?style=flat-square&labelColor=C7690C">
+</p>
+
 > The configuration file of the mpv player supports Windows, macOS, Linux, with a consistent context menu feature across all platforms.
 
 #### [中文](https://github.com/akFace/mpv.config/blob/main/README.md) | English
@@ -8,7 +14,7 @@
 
 ## Overview
 
-- Two themes, `modernz` and `uosc`, featuring a beautiful modern UI with a borderless design
+- Themes, `modernz`, `ModernGlass` and `uosc`, featuring a beautiful modern UI with a borderless design
 - Uses the native mpv player with configuration and player kept separate, so you do not need to worry about the player being unable to update to the latest version
 - Integrated thumbnail previews on the progress bar
 - Integrated online Chinese subtitle search
@@ -36,9 +42,12 @@
 
 ### 2. Download the Theme Configuration
 
-[🎯 Click to Download](https://github.com/akFace/mpv.config/releases) the theme you need. The following themes are currently available: `xxx_en.zip` version
+[🎯 Click to Download](https://github.com/akFace/mpv.config/releases) the theme you need. The following themes are currently available:
+
+Please download `xxx_en.zip` version
 
 - `modernz`
+- `modern_glass`
 - `uosc`
 
 Each theme archive contains a complete, fully functional configuration. Simply download and extract it.
@@ -79,6 +88,7 @@ Windows: C:/Users/%username%/AppData/Roaming/mpv/
 
 - Uosc Theme Options：[Uosc](https://github.com/tomasklaen/uosc#options)
 - ModernZ Theme Options：[ModernZ](https://github.com/Samillion/ModernZ#customization)
+- ModernGlass Theme Options：[ModernGlass](https://github.com/Demetter/ModernGlass#configuration)
 - The default danmaku style is configured in `script-opts/uosc_danmaku.conf`. To modify it, open the file with a text editor.
 - Danmaku-related configuration: [View the documentation](https://github.com/Tony15246/uosc_danmaku#%E7%9B%AE%E5%BD%95)
 - **Recommended:** Tampermonkey script 👉 [play-with-mpv - Play videos from web pages with mpv](https://github.com/akFace/play-with-mpv)
@@ -97,7 +107,12 @@ Windows: C:/Users/%username%/AppData/Roaming/mpv/
 
 ![image](./preview/Snipaste_2026-09-02_22-25-41.jpg)
 ![image](./preview/Snipaste_2026-10-10_15-08-58.jpg)
+**modern_glass** 👇
+![image](./preview/Snipaste_2026-10-13_21-06-43.jpg)
+**modernz** 👇
 ![image](https://raw.githubusercontent.com/akFace/mpv.net.config/main/preview/Snipaste_2026-09-02_22-31-00.jpg)
+**uosc** 👇
+![image](./preview/Snipaste_2026-08-24_03-00-53.jpg)
 
 ## Open-source project
 
@@ -121,6 +136,7 @@ Thanks to the following open-source projects for making this possible:
 - [celebi](https://github.com/po5/celebi)
 - [uosc](https://github.com/tomasklaen/uosc)
 - [ModernZ](https://github.com/Samillion/ModernZ)
+- [ModernGlass](https://github.com/Demetter/ModernGlass)
 - [mpv-sub-assrt](https://github.com/dyphire/mpv-sub-assrt)
 - [uosc_danmaku](https://github.com/Tony15246/uosc_danmaku)
 - [Anime4K](https://github.com/bloc97/Anime4K)
