@@ -201,7 +201,10 @@
         "download_in_progress": "下载中",
         "downloading": "正在下载",
         "downloaded": "已下载",
-        "menu": "菜单"
+        "menu": "菜单",
+        "fullscreen": "全屏",
+        "fullscreen_exit": "退出全屏",
+        "volume": "音量"
     },
     "ar": {
         "lang_direction": "RTL",

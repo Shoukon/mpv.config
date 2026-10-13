@@ -93,7 +93,7 @@ Windows: C:/Users/%username%/AppData/Roaming/mpv/
 
 > [!TIP]
 >
-> You can switch the theme color in the player: Right click, Tools > Theme >
+> You can switch the theme color in the player: Right click, Tools > Theme > Select Theme
 
 ![image](./preview/Snipaste_2026-09-02_22-25-41.jpg)
 ![image](./preview/Snipaste_2026-10-10_15-08-58.jpg)
@@ -107,6 +107,7 @@ See also:
 - [mpv-menu-plugin-next](https://github.com/akFace/mpv-menu-plugin-next)
 - [switch-opts](./src/common/scripts/switch-opts.lua)
 - [interp_switch](./src/common/scripts/interp_switch.lua)
+- [skip-intro](./src/common/scripts/skip-intro.lua)
 - [merge-input](./src/common/scripts/merge-input.lua)
 - [play-with-mpv](https://github.com/akFace/play-with-mpv)
 - [scheme-handler-cross](https://github.com/akFace/scheme-handler-cross)
