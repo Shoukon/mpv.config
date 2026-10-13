@@ -44,7 +44,12 @@ end
 
 local function key_for(path)
     if not path or path == '' then return nil end
-    if is_url(path) then return path end
+
+    if is_url(path) then
+        -- Strip query string (everything after ?)
+        path = path:gsub('%?.*$', '')
+        return path
+    end
 
     path = path:gsub('^file://', '')
     local dir = path:match('^(.*)[/\\][^/\\]+$')
