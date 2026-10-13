@@ -5,7 +5,7 @@ const { ZipArchive } = require("archiver");
 
 // ---------- 配置 ----------
 const BASE_SRC = "src";
-const SKINS = ["modernz", "uosc"];
+const SKINS = ["modernz", "uosc", "modern_glass"];
 
 /**
  * INPUT_CONFIGS 说明：
@@ -113,9 +113,21 @@ async function build() {
         // 1. 复制皮肤
         await fs.copy(skinSrc, tempDir);
 
-        // 2. 合并 common
+        // 2. 合并 common（先铺 common，再用皮肤内容覆盖）
         if (await fs.pathExists(COMMON_DIR)) {
-          await fs.copy(COMMON_DIR, tempDir, { overwrite: true });
+          const skinBackup = `${tempDir}_skin_backup`;
+
+          // 2.1 暂存已复制的皮肤内容
+          await fs.move(tempDir, skinBackup, { overwrite: true });
+
+          // 2.2 以 common 作为基底
+          await fs.copy(COMMON_DIR, tempDir);
+
+          // 2.3 用皮肤内容覆盖 common
+          await fs.copy(skinBackup, tempDir, { overwrite: true });
+
+          // 2.4 清理暂存目录
+          await fs.remove(skinBackup);
         }
 
         // 3. 复制 input 配置，并重命名为 input.conf
