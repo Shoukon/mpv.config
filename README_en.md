@@ -1,4 +1,4 @@
-# Ready-to-Use Configuration Files, Elegant UI Themes & Useful Plugins for mpv and mpv.net (Windows, macOS, Linux)
+# Ready-to-Use Configuration Files, Elegant UI Themes & Useful Plugins for mpv (Windows, macOS, Linux)
 
 <p align="center">
   <img alt="mpv 0.40+" src="https://img.shields.io/badge/mpv-0.40%2B-2b2d33?style=flat-square&labelColor=8934D9">
@@ -44,7 +44,7 @@
 
 [🎯 Click to Download](https://github.com/akFace/mpv.config/releases) the theme you need. The following themes are currently available:
 
-Please download `xxx_en.zip` version
+Please download `xxx_en.zip` version, [How to add a localized language?](https://github.com/akFace/mpv.config/wiki/How-to-add-a-localized-language%3F)
 
 - `modernz`
 - `modern_glass`

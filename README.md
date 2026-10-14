@@ -1,4 +1,4 @@
-# mpv 和 mpv.net 播放器开箱即用配置文件&精美 UI 主题皮肤&常用插件（支持 Windows、macOS、Linux）
+# MPV 播放器开箱即用配置文件&精美 UI 主题皮肤&常用插件（支持 Windows、macOS、Linux）
 
 > [!TIP]
 >
