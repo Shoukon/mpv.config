@@ -779,7 +779,7 @@
             target="_blank"
             rel="noreferrer"
             data-i18n="download"
-            >↓ 下载配置</a
+            >↓ 前往下载</a
           >
         </div>
       </div>
@@ -800,7 +800,7 @@
           </p>
           <div class="hero-cta">
             <a
-              class="btn btn-primary"
+              class="btn btn-secondary"
               href="https://github.com/akFace/mpv.config"
               target="_blank"
               rel="noreferrer"
@@ -822,7 +822,15 @@
               href="https://github.com/akFace/mpv.config/releases"
               target="_blank"
               rel="noreferrer"
-              ><span>↓</span><span data-i18n="getStarted">获取配置</span></a
+              ><span>↓</span><span data-i18n="getStarted">前往下载</span></a
+            >
+            <a
+              class="btn btn-primary"
+              href="https://pan.quark.cn/s/44d4b871af74"
+              target="_blank"
+              rel="noreferrer"
+              id="quarkDownload"
+              ><span>↓</span><span>整合包下载</span></a
             >
             <a
               class="btn btn-secondary"
@@ -1195,12 +1203,12 @@
           navCompare: "画质对比",
           navThemes: "主题",
           navMenu: "菜单",
-          download: "↓ 下载配置",
+          download: "↓ 前往下载",
           eyebrow: "为 mpv 打造的完整体验",
           heroTitle: '让每一帧，<span class="grad">更出色。</span>',
           heroDesc:
             "一套开箱即用的 mpv 配置：现代化主题、智能右键菜单、Anime4K 超分与常用插件。轻量、灵活，Windows / macOS / Linux 全平台适用。",
-          getStarted: "获取配置",
+          getStarted: "前往下载",
           readWiki: "阅读 Wiki",
           pillOpen: "开源 · 多主题",
           heroCaption: "简洁无边框界面 · 播放器与配置分离 · 为日常观影而设计",
@@ -1339,9 +1347,20 @@
           readMoreShaders: "See more upscaling shaders ↗",
         },
       };
-      let lang = "zh";
+      // 根据浏览器语言自动选择
+      let lang = (navigator.language || navigator.userLanguage || "")
+        .toLowerCase()
+        .startsWith("zh")
+        ? "zh"
+        : "en";
       function setLang(next) {
         lang = next;
+        if (lang === "zh") {
+          document.getElementById("quarkDownload").style.display =
+            "inline-flex";
+        } else {
+          document.getElementById("quarkDownload").style.display = "none";
+        }
         document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
         document.querySelectorAll("[data-i18n]").forEach((el) => {
           const k = el.dataset.i18n;
@@ -1368,6 +1387,7 @@
             )
           );
       }
+      setLang(lang);
       document
         .getElementById("langToggle")
         .addEventListener("click", () => setLang(lang === "zh" ? "en" : "zh"));
