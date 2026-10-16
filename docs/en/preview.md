@@ -9,6 +9,6 @@
 **modern_glass** 👇
 ![image](./../images/Snipaste_2026-10-13_21-06-43.jpg)
 **modernz** 👇
-![image](https://raw.githubusercontent.com/akFace/mpv.net.config/main/preview/Snipaste_2026-09-02_22-31-00.jpg)
+![image](./../images/Snipaste_2026-09-02_22-31-00.jpg)
 **uosc** 👇
 ![image](./../images/Snipaste_2026-08-24_03-00-53.jpg)
