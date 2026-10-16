@@ -2,6 +2,7 @@ import { defineConfig } from "vitepress";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  base: "/mpv.config/docs/",
   title: "mpv.config",
   description: "mpv.config — The configuration file of the mpv player",
 
