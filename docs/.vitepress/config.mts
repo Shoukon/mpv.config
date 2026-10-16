@@ -8,6 +8,9 @@ export default defineConfig({
 
   // 顶层 themeConfig 只放所有语言通用的配置
   themeConfig: {
+    search: {
+      provider: "local",
+    },
     socialLinks: [
       { icon: "github", link: "https://github.com/akFace/mpv.config" },
     ],
@@ -35,6 +38,7 @@ export default defineConfig({
               { text: "自定义配置", link: "/custom" },
               { text: "常见问题&推荐", link: "/faq" },
               { text: "预览截图", link: "/preview" },
+              { text: "如何更新到最新版", link: "/update" },
             ],
           },
         ],
@@ -64,6 +68,7 @@ export default defineConfig({
               { text: "Custom Configuration", link: "/en/custom" },
               { text: "FAQ & Recommendations", link: "/en/faq" },
               { text: "Preview Screenshots", link: "/en/preview" },
+              { text: "How to Update", link: "/en/update" },
             ],
           },
         ],

@@ -20,6 +20,8 @@ coverage
 .next/
 out/
 dist
+docs/.vitepress/dist
+docs/.vitepress/cache
 
 # misc
 .DS_Store

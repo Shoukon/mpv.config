@@ -30,5 +30,3 @@
 - 其他快捷键（某些会被右键菜单中的快捷键覆盖，请以实际为主）：
 
   [![Keyboard Shortcuts](https://pic1.zhimg.com/v2-672e28d79cc4d140187d84c25a79aeae_r.jpg)](https://pic1.zhimg.com/v2-672e28d79cc4d140187d84c25a79aeae_r.jpg)
-
-  ![image](./images/Snipaste_2026-08-16_01-04-38.jpg)
