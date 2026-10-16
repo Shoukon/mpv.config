@@ -1,9 +1,9 @@
 # 自定义
 
 > [!TIP]
-> 如何自定义配置（mpv.conf）与快捷键 菜单（input.conf），在更新版本时直接覆盖不受影响？
+> 如何自定义配置 `mpv.conf` 与快捷键/菜单 `input.conf` 、`script-opts/` 目录中的任意`.conf`文件，在更新版本时直接覆盖不受影响？
 
-## 自定义配置（mpv.conf）
+## 自定义配置（`mpv.conf` 与 任意`.conf`文件）
 
 > - 为了达到在更新版本时直接覆盖不受影响，需要在不修改 mpv.conf 和任意`script-opts/xxx.conf` 的配置项的情况下改变其中的内容
 > - [相关 issue](https://github.com/akFace/mpv.config/issues/19)， 方案如下：
@@ -45,7 +45,7 @@ script-opts-append = "modernz-seek_handle_border_color=#076792"
 script-opts-append = "modernz-hover_effect_color=#FF6699"
 ```
 
-## 自定义快捷键/菜单（input.conf）
+## 自定义快捷键/菜单（`input.conf`）
 
 > - 方案如下：
 

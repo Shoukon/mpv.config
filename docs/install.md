@@ -48,6 +48,7 @@ Linux:   ~/.config/mpv/
 Windows: C:/Users/%username%/AppData/Roaming/mpv/
 ```
 
-> ⚠️ **提示**：**mpv.net 播放器** 可直接右键>配置>打开配置文件夹或者`Ctrl + f`快捷键打开 **_配置文件夹_** 。若你使用的是 mpv.net 播放器，出现偶尔无法加载缩略图的情况，请修改`script-opts/thumbfast.conf`目录中的`mpv_path=mpv`改为`mpv_path=mpvnet`或者播放器安装目录可执行文件 例如：`mpv_path=C:\Program Files\mpv.net\mpvnet.exe`
+> [!IMPORTANT]
 >
-> - macOS、Linux 用户操作方式一致，将解压出的全部配置文件放置到 **_配置文件夹_** 重启播放器即可
+> - macOS、Linux 用户操作方式类似，将解压出的全部配置文件放置到 **_配置文件夹_** 重启播放器即可
+> - **mpv.net 播放器** 可直接右键>配置>打开配置文件夹或者`Ctrl + f`快捷键打开 **_配置文件夹_** 。若你使用的是 mpv.net 播放器，出现偶尔无法加载**缩略图**的情况，请修改`script-opts/thumbfast.conf`目录中的`mpv_path=mpv`改为`mpv_path=mpvnet`或者播放器安装目录可执行文件 例如：`mpv_path=C:\Program Files\mpv.net\mpvnet.exe`

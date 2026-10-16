@@ -32,7 +32,6 @@ mpv启动时默认：
 # MPV 视频增强滤镜组合分析
 
 > [!TIP]
-> ❗ **重要提示**：
 >
 > - 以下内容基于最新版本为主，旧版或有差异：🍭 [查看最新 releases 版本](https://github.com/akFace/mpv.config/releases)
 > - 查看是否为最新版本，播放器内：右键 > 工具 > 检查更新，🎯 [如何更新到最新版？](https://akface.github.io/mpv.config/docs/update)

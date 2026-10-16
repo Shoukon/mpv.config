@@ -11,6 +11,9 @@ export default defineConfig({
     search: {
       provider: "local",
     },
+    editLink: {
+      pattern: "https://github.com/akFace/mpv.config/tree/main/docs/:path",
+    },
     socialLinks: [
       { icon: "github", link: "https://github.com/akFace/mpv.config" },
     ],

@@ -1,15 +1,15 @@
 # Customization
 
 > [!TIP]
-> How can you customize `mpv.conf` and the shortcut/menu file (`input.conf`) without losing your changes when updating?
+> How can I customize the configuration `mpv.conf`, keybindings menus `input.conf` and any `script-opts/xxx.conf` file so that they remain unaffected when overwriting files during a version update?
 
-## Customize the configuration (`mpv.conf`)
+## Customize the configuration (`mpv.conf` and Any `.conf` file)
 
 > - To preserve customizations when updating, avoid directly changing settings in `mpv.conf` or any `script-opts/xxx.conf` file. Instead, use the method below.
 > - Related issue: [#19](https://github.com/akFace/mpv.config/issues/19)
 
 1. In the same directory as `mpv.conf`, create a file named `custom-opts.conf`.
-2. Edit `mpv.conf` and add this line: `include = "~~/custom-opts.conf"`.
+2. Edit `mpv.conf` and add this line: `include = "~~/custom-opts.conf"`
 3. Edit `custom-opts.conf` and add your custom settings. For example:
 
 ```conf

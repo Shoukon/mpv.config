@@ -1,4 +1,4 @@
-# 一些常用设置&文档（可选）
+# 一些常用设置&推荐
 
 - Uosc 主题自定义文档：[Uosc](https://github.com/tomasklaen/uosc#options)
 - ModernZ 主题自定义文档：[ModernZ](https://github.com/Samillion/ModernZ#customization)

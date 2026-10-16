@@ -4,12 +4,12 @@ Video-enhancement shaders and frame interpolation are disabled by default when m
 
 ```text
 Default mpv startup:
-      ┌──────────────┐
+      ┌─────────────────┐
       │ Normal playback │
       │ No Anime4K      │
       │ No interpolation│
       │ No shader chain │
-      └──────────────┘
+      └─────────────────┘
                │
                │ User selects an option from the right-click menu
                ↓
@@ -32,7 +32,6 @@ Default mpv startup:
 # Analysis of MPV Video Enhancement Shader Combinations
 
 > [!TIP]
-> ❗ **Important**
 >
 > - This guide primarily reflects the latest version; older versions may differ. 🍭 [View the latest releases](https://github.com/akFace/mpv.config/releases)
 > - To check for updates in the player, right-click and select **Tools > Check for updates**. 🎯 [How to update to the latest version](https://akface.github.io/mpv.config/docs/en/update.html)

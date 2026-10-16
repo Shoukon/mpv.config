@@ -26,8 +26,8 @@ Each theme archive contains a complete, fully functional configuration. Simply d
 ### 3. Configure the Player
 
 - **The following example uses Windows:**
-- After extracting/installing the player, create a new folder named `portable_config` in the player's root directory (the same directory as `mpv.exe`). This will be used as the `configuration folder`.
-- **Copy all extracted files into the `configuration folder` (only one theme configuration can be used at a time), then restart the player.**
+- After extracting/installing the player, create a new folder named `portable_config` in the player's root directory (the same directory as `mpv.exe`). This will be used as the **configuration folder**.
+- Copy all extracted files into the **configuration folder** (only one theme configuration can be used at a time), then restart the player.
 
 - **Note the directory structure**
 
@@ -49,6 +49,7 @@ Linux:   ~/.config/mpv/
 Windows: C:/Users/%username%/AppData/Roaming/mpv/
 ```
 
-> ⚠️ **Tip**: If you are using the mpv.net player and thumbnails occasionally fail to load, change `mpv_path=mpv` in `script-opts/thumbfast.conf` to `mpv_path=mpvnet`, or specify the executable in the player installation directory, for example: `mpv_path=C:\Program Files\mpv.net\mpvnet.exe`
+> [!IMPORTANT]
 >
-> - The procedure is the same for macOS and Linux users: simply place the extracted files into the **_`configuration folder`_** and restart the player.
+> - The procedure is the same for macOS and Linux users: simply place the extracted files into the **_configuration folder_** and restart the player.
+> - If you are using the mpv.net player and thumbnails occasionally fail to load, change `mpv_path=mpv` in `script-opts/thumbfast.conf` to `mpv_path=mpvnet`, or specify the executable in the player installation directory, for example: `mpv_path=C:\Program Files\mpv.net\mpvnet.exe`
