@@ -5,120 +5,56 @@
 > - The configuration file of the mpv player supports Windows, macOS, Linux, with a consistent context menu feature across all platforms, **multiple menu styles available**
 > - mpv 配置文件支持 Windows、macOS、Linux，全平台带有一致的右键菜单功能，**多种菜单样式可选**
 
-![主页](./preview/main.png)
+![主页](./docs/images/main.png)
 
 <p align="center">
   <img alt="mpv 0.40+" src="https://img.shields.io/badge/mpv-0.40%2B-2b2d33?style=flat-square&labelColor=8934D9">
   <img alt="Windows, macOS, Linux" src="https://img.shields.io/badge/platform-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2b2d33?style=flat-square&labelColor=008040">
   <img alt="License LGPL-2.1" src="https://img.shields.io/badge/license-LGPL--2.1-2b2d33?style=flat-square&labelColor=C7690C">
+  <a href="https://github.com/akFace/mpv.config/releases"><img alt="Releases" src="https://img.shields.io/github/v/release/akFace/mpv.config?style=flat-square&labelColor=8934D9&label=Releases"></a>
 </p>
 
 ### 中文 | [English](https://github.com/akFace/mpv.config/blob/main/README_en.md)
 
-## 简要说明
+## 使用教程
+
+- [查看详细使用教程](https://akface.github.io/mpv.config/docs/install.html)
+- To check out docs, visit [Installation Guide](https://akface.github.io/mpv.config/docs/en)
+
+## 官网主页
+
+🎉✨ [https://akFace.github.io/mpv.config](https://akface.github.io/mpv.config/)
+
+## 主要功能
 
 - 主题皮肤`modernz`、`uosc`、`ModernGlass`，漂亮的现代化 UI 无边框设计
 - 使用原生 mpv 播放器，配置/播放器分离，无需担心播放器无法更新到最新版
 - 集成进度条缩略图预览
 - 集成在线中文字幕搜索，全网弹幕在线加载
 - 集成 Anime4K 超分画质，实时提升画质
-- 支持多种视频着色器滤镜：[shaders 滤镜说明指南](https://github.com/akFace/mpv.config/wiki/%E8%A7%86%E9%A2%91%E6%BB%A4%E9%95%9C%E9%80%89%E6%8B%A9%E6%8C%87%E5%8D%97)
+- 支持多种视频着色器滤镜：[shaders 滤镜说明指南](https://akface.github.io/mpv.config/docs/shaders.html)
 - 支持插帧模式功能，提升流畅度
 - 视频滤镜/Anime4K/FSRCNNX/CuNNy/ArtCNN 等，可右键菜单按需加载
 - 支持 360°VR 全景视频
 - 可视化调节 eq 均衡器、声道切换、自动 HDR、解码切换、调色等常用功能
 - 实时切换主题配色
+- 自动跳过片头片尾
 - Windows、macOS、Linux 全平台一致的强大右键菜单功能
 - 轻量级，超简单，只需简单几步骤即可完成享用
-- [>>查看主题预览效果截图](https://github.com/akFace/mpv.config#%E9%A2%84%E8%A7%88%E6%95%88%E6%9E%9C%E5%9B%BE)
-- [>>常见相关问题](https://github.com/akFace/mpv.config#一些常用设置文档可选)
 
-## 使用方法
-
-### 1. 先安装播放器
-
-- **Windows：**
-  - [官方构建版本（推荐）](https://github.com/mpv-player/mpv/releases)
-  - [每日构建版本（推荐）](https://github.com/zhongfly/mpv-winbuild/releases)
-  - [shinchiro 版本](https://github.com/shinchiro/mpv-winbuild-cmake/releases)
-  - [mpv.net 版本](https://github.com/mpvnet-player/mpv.net/releases)
-- **macOS、Linux：** [mpv 官网下载](https://mpv.io/installation/)
-
-### 2. 下载主题配置
-
-[🎯 点击下载](https://github.com/akFace/mpv.config/releases) 你需要的主题皮肤，目前提供：
-
-- `modernz`
-- `modern_glass`
-- `uosc`
-
-每个主题皮肤压缩包均包含完整功能的配置，下载后解压。
-
-### 3. 配置播放器
-
-**以下案例以 Windows 系统为例：**
-
-- 解压/安装播放器后，在播放器根目录(`mpv.exe` 同目录)下新建名为 `portable_config` 文件夹，作为 **_配置文件夹_**
-- 将解压出的全部文件复制到 **_配置文件夹_** (只能共存一个主题配置)，重启播放器即可
-
-- **注意目录结构**
-
-```
-一般的目录结构如下:
-~/mpv/portable_config
-      ├── fonts
-      ├── scripts
-      ├── script-opts
-      ├── mpv.conf
-      └── input.conf
-```
-
-macOS、Linux 、Windows 全局配置文件夹路径：
-
-```
-macOS:   ~/Library/Application Support/mpv/
-Linux:   ~/.config/mpv/
-Windows: C:/Users/%username%/AppData/Roaming/mpv/
-```
-
-> ⚠️ **提示**：**mpv.net 播放器** 可直接右键>配置>打开配置文件夹或者`Ctrl + f`快捷键打开 **_配置文件夹_** 。若你使用的是 mpv.net 播放器，出现偶尔无法加载缩略图的情况，请修改`script-opts/thumbfast.conf`目录中的`mpv_path=mpv`改为`mpv_path=mpvnet`或者播放器安装目录可执行文件 例如：`mpv_path=C:\Program Files\mpv.net\mpvnet.exe`
->
-> - macOS、Linux 用户操作方式一致，将解压出的全部配置文件放置到 **_配置文件夹_** 重启播放器即可
-
-### **[👉 查看常用快捷键&默认行为](https://github.com/akFace/mpv.config/wiki/%E5%BF%AB%E6%8D%B7%E9%94%AE)**
-
-### 一些常用设置&文档（可选）
-
-- Uosc 主题自定义文档：[Uosc](https://github.com/tomasklaen/uosc#options)
-- ModernZ 主题自定义文档：[ModernZ](https://github.com/Samillion/ModernZ#customization)
-- ModernGlass 主题自定义文档：[ModernGlass](https://github.com/Demetter/ModernGlass#configuration)
-- 弹幕默认样式在配置文件夹`script-opts/uosc_danmaku.conf`下，要修改请使用文本编辑器打开编辑
-- 弹幕相关配置：[查看文档](https://github.com/Tony15246/uosc_danmaku#%E7%9B%AE%E5%BD%95)
-- **关于弹幕流畅度问题**，目前本人的设备屏幕是 4k60hz，要打开视频同步帧 `display-resample` 才流畅，但有些用户的设备打开此设置开倍速播放会导致声音卡问题，因此现在默认关闭，需要打开的：右键菜单 > 弹幕 > 同步视频帧 即可
-- 直接播放 B 站、YouTube 视频或其他链接：安装 [yt-dlp](https://github.com/yt-dlp/yt-dlp/releases) ，进入下载 yt-dlp.exe，放到 `mpv.exe` 同目录下，即：播放器安装目录。重启即可直接粘贴视频页面链接，不过更推荐下边的浏览器插件
-- **推荐：** 油猴脚本 👉 [play-with-mpv 使用 mpv 播放网页中的视频](https://github.com/akFace/play-with-mpv)
-
-## 如何更新到最新版
-
-- 播放器更新：直接下载最新版 [[mpv 原生播放器]](https://mpv.io/) 或者 [🎬[mpv.net 播放器]](https://github.com/mpvnet-player/mpv.net/releases) 安装即可
-- 配置主题皮肤更新：直接下载最新版[🎯 点击下载](https://github.com/akFace/mpv.config/releases) 解压覆盖即可
-- 如何自定义配置 mpv.conf 与快捷键/菜单 input.conf，在更新版本时直接覆盖不受影响？ 📢 [查看教程](https://github.com/akFace/mpv.config/wiki/%E8%87%AA%E5%AE%9A%E4%B9%89-mpv.conf-%E4%B8%8E%E5%BF%AB%E6%8D%B7%E9%94%AE-%E8%8F%9C%E5%8D%95-input.conf)
-
-## 预览效果图：
+## 主题预览截图
 
 ### 主题皮肤（modernz）
 
-![image](./preview/Snipaste_2026-03-16_20-32-59.jpg)
+![image](./docs/images/Snipaste_2026-03-16_20-32-59.jpg)
 
 ### 主题皮肤（uosc）
 
-![image](./preview/Snipaste_2026-08-24_03-00-53.jpg)
+![image](./docs/images/Snipaste_2026-08-24_03-00-53.jpg)
 
 ### 主题皮肤 （modern_glass）
 
-![image](./preview/Snipaste_2026-10-13_21-06-43.jpg)
-
----
+![image](./docs/images/Snipaste_2026-10-13_21-06-43.jpg)
 
 ### 功能强大的右键菜单
 
@@ -128,46 +64,17 @@ Windows: C:/Users/%username%/AppData/Roaming/mpv/
 > **多种菜单样式可选**  
 > 切换主题配色方法：播放器内右键 > 工具 > 主题 选择对应的名称即可
 
-![image](./preview/preview.gif)
+![image](./docs/images/preview.gif)
 
-<details>
-<summary>🎁 <strong>点击展开/查看截图  OPEN/SCREENSHOT</strong></summary>
+🍭 更多特性： [https://akFace.github.io/mpv.config](https://akface.github.io/mpv.config/)
 
-#### Default
+## 下载最新版本
 
-![image](./preview/Snipaste_2026-08-15_00-09-37.jpg)
+[![Keyboard Shortcuts](https://img.shields.io/github/v/release/akFace/mpv.config?style=flat-square&labelColor=8934D9&label=Releases)](https://github.com/akFace/mpv.config/releases)
 
-#### macOS-white
+## Open-source project
 
-![image](./preview/Snipaste_2026-08-16_01-04-38.jpg)
-
-#### macOS-dark
-
-![image](./preview/Snipaste_2026-08-16_01-10-14.jpg)
-
-#### Teal-blue
-
-![image](./preview/Snipaste_2026-09-26_15-31-59.jpg)
-
-#### Purple-dark
-
-![image](./preview/Snipaste_2026-09-29_00-13-54.jpg)
-
-#### Gray-glass
-
-![image](./preview/Snipaste_2026-10-09_18-32-34.jpg)
-
-</details>
-
----
-
-### 支持可视化均衡器 eq
-
-![alt text](https://github.com/akFace/equalizer-gui/raw/main/images/Snipaste_2026-08-13_18-08-43.jpg)
-
-## 相关链接
-
-自有插件：
+See also:
 
 - [equalizer-gui](https://github.com/akFace/equalizer-gui)
 - [mpv-menu-plugin-next](https://github.com/akFace/mpv-menu-plugin-next)
@@ -180,7 +87,7 @@ Windows: C:/Users/%username%/AppData/Roaming/mpv/
 
 ---
 
-鸣谢以下开源项目提供的便利：
+Thanks to the following open-source projects for making this possible:
 
 - [mpv](https://github.com/mpv-player/mpv)
 - [thumbfast](https://github.com/po5/thumbfast)
@@ -198,4 +105,4 @@ Windows: C:/Users/%username%/AppData/Roaming/mpv/
 - [awesome-mpv](https://github.com/stax76/awesome-mpv)
 - [dyphire/mpv-config](https://github.com/dyphire/mpv-config)
 - [mpv_PlayKit](https://github.com/hooke007/mpv_PlayKit)
-- [mpv 中文配置手册](https://hooke007.github.io/official_man/index.html)
+- [mpv guide](https://hooke007.github.io/official_man/index.html)

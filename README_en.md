@@ -4,6 +4,7 @@
   <img alt="mpv 0.40+" src="https://img.shields.io/badge/mpv-0.40%2B-2b2d33?style=flat-square&labelColor=8934D9">
   <img alt="Windows, macOS, Linux" src="https://img.shields.io/badge/platform-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2b2d33?style=flat-square&labelColor=008040">
   <img alt="License LGPL-2.1" src="https://img.shields.io/badge/license-LGPL--2.1-2b2d33?style=flat-square&labelColor=C7690C">
+  <a href="https://github.com/akFace/mpv.config/releases"><img alt="Releases" src="https://img.shields.io/github/v/release/akFace/mpv.config?style=flat-square&labelColor=8934D9&label=Releases"></a>
 </p>
 
 > The configuration file of the mpv player supports Windows, macOS, Linux, with a consistent context menu feature across all platforms.
@@ -12,92 +13,26 @@
 
 - Note: This document was translated by `AI-translated` and may contain some inaccuracies.
 
-## Overview
-
-- Themes, `modernz`, `ModernGlass` and `uosc`, featuring a beautiful modern UI with a borderless design
-- Uses the native mpv player with configuration and player kept separate, so you do not need to worry about the player being unable to update to the latest version
-- Integrated thumbnail previews on the progress bar
-- Integrated online Chinese subtitle search
-- Supports online loading of danmaku from across the web
-- Integrated Anime4K upscaling for real-time image quality enhancement
-- Supports multiple video shader filters：[shaders](https://github.com/akFace/mpv.config/wiki/Shader---Video-Filter-Selection-Guide)
-- Video filters (Anime4K, FSRCNNX, CuNNy, ArtCNN, etc.) can be loaded on demand via the right-click menu.
-- Supports frame interpolation mode for smoother playback
-- Supports 360° VR panoramic videos
-- Visual equalizer controls, Audio channel switch, Automatic HDR, Decoding switching, and Color grading...
-- Switch theme color schemes in real-time
-- Powerful and consistent context menu functionality across Windows, macOS, and Linux
-- Lightweight and extremely simple, with just two steps to get started
-
 ## Installation
 
-### 1. Install the Player
+- 🎯 To check out docs, visit [Installation Guide](https://akface.github.io/mpv.config/docs/en/install.html)
 
-- **Windows:**
-  - [Official Builds (Recommended)](https://github.com/mpv-player/mpv/releases)
-  - [Daily Builds (Recommended)](https://github.com/zhongfly/mpv-winbuild/releases)
-  - [shinchiro Builds](https://github.com/shinchiro/mpv-winbuild-cmake/releases)
-  - [mpv.net Builds](https://github.com/mpvnet-player/mpv.net/releases)
-- **macOS, Linux:** [Download from the official mpv website](https://mpv.io/installation/)
+## Feature
 
-### 2. Download the Theme Configuration
-
-[🎯 Click to Download](https://github.com/akFace/mpv.config/releases) the theme you need. The following themes are currently available:
-
-Please download `xxx_en.zip` version, [How to add a localized language?](https://github.com/akFace/mpv.config/wiki/How-to-add-a-localized-language%3F)
-
-- `modernz`
-- `modern_glass`
-- `uosc`
-
-Each theme archive contains a complete, fully functional configuration. Simply download and extract it.
-
-### 3. Configure the Player
-
-- **The following example uses Windows:**
-- After extracting/installing the player, create a new folder named `portable_config` in the player's root directory (the same directory as `mpv.exe`). This will be used as the `configuration folder`.
-- **Copy all extracted files into the `configuration folder` (only one theme configuration can be used at a time), then restart the player.**
-
-- **Note the directory structure**
-
-```
-A typical directory structure looks like this:
-~/mpv/portable_config
-      ├── fonts
-      ├── scripts
-      ├── script-opts
-      ├── mpv.conf
-      └── input.conf
-```
-
-macOS、Linux 、Windows， The global configuration directories are:
-
-```
-macOS:   ~/Library/Application Support/mpv/
-Linux:   ~/.config/mpv/
-Windows: C:/Users/%username%/AppData/Roaming/mpv/
-```
-
-> ⚠️ **Tip**: If you are using the mpv.net player and thumbnails occasionally fail to load, change `mpv_path=mpv` in `script-opts/thumbfast.conf` to `mpv_path=mpvnet`, or specify the executable in the player installation directory, for example: `mpv_path=C:\Program Files\mpv.net\mpvnet.exe`
->
-> - The procedure is the same for macOS and Linux users: simply place the extracted files into the **_`configuration folder`_** and restart the player.
-
-### **[👉 View common keyboard shortcuts! ](https://github.com/akFace/mpv.config/wiki/%E5%BF%AB%E6%8D%B7%E9%94%AE)**
-
-### Common Settings & Documentation (Optional)
-
-- Uosc Theme Options：[Uosc](https://github.com/tomasklaen/uosc#options)
-- ModernZ Theme Options：[ModernZ](https://github.com/Samillion/ModernZ#customization)
-- ModernGlass Theme Options：[ModernGlass](https://github.com/Demetter/ModernGlass#configuration)
-- The default danmaku style is configured in `script-opts/uosc_danmaku.conf`. To modify it, open the file with a text editor.
-- Danmaku-related configuration: [View the documentation](https://github.com/Tony15246/uosc_danmaku#%E7%9B%AE%E5%BD%95)
-- **Recommended:** Tampermonkey script 👉 [play-with-mpv - Play videos from web pages with mpv](https://github.com/akFace/play-with-mpv)
-
-## How to Update to the Latest Version
-
-- Player update: Simply download and install the latest [mpv player](https://mpv.io/) or [🎬 mpv.net player](https://github.com/mpvnet-player/mpv.net/releases).
-- Configuration/theme update: Simply [🎯 download the latest version](https://github.com/akFace/mpv.config/releases), extract it, and overwrite the existing files. (Back up your files before overwriting)
-- How can I customize the configuration ( mpv.conf ) and keybindings menus ( input.conf ) so that they remain unaffected when overwriting files during a version update? 📢 [View more >>](https://github.com/akFace/mpv.config/wiki/Customize-the-mpv.conf-&-input.conf)
+- **Modern, Borderless UI** — Beautiful themes including `ModernZ`, `uosc`, and `ModernGlass`.
+- **Native mpv Player** — Player and configuration are kept separate, so you can update mpv independently.
+- **Timeline Thumbnail Previews** — Preview video frames directly on the seekbar.
+- **Online Subtitles & Danmaku** — Built-in online Chinese subtitle search and danmaku loading from multiple sources.
+- **Anime4K Upscaling** — Enhance video quality in real time with Anime4K.
+- **Multiple Video Shaders** — Supports a wide range of video shaders and filters. [View the Shader Guide](https://akface.github.io/mpv.config/docs/shaders.html).
+- **Frame Interpolation** — Enjoy smoother playback with multiple interpolation modes.
+- **On-Demand Video Filters** — Load Anime4K, FSRCNNX, CuNNy, ArtCNN, and other filters directly from the right-click menu.
+- **360° VR Support** — Supports 360° VR panoramic videos.
+- **Visual Audio & Video Controls** — Easily adjust the EQ, switch audio channels and decoding methods, enable automatic HDR, and fine-tune colors.
+- **Live Theme Customization** — Switch theme color schemes on the fly.
+- **Automatic Intro & Outro Skipping** — Skip video intros and outros automatically.
+- **Cross-Platform Menus** — Consistent, feature-rich right-click menus on Windows, macOS, and Linux.
+- **Lightweight & Easy to Set Up** — Get started in just a few simple steps.
 
 ## Preview
 
@@ -105,46 +40,11 @@ Windows: C:/Users/%username%/AppData/Roaming/mpv/
 >
 > You can switch the theme color in the player: Right click, Tools > Theme > Select Theme
 
-![image](./preview/Snipaste_2026-09-02_22-25-41.jpg)
-![image](./preview/Snipaste_2026-10-10_15-08-58.jpg)
+![image](./docs/images/Snipaste_2026-09-02_22-25-41.jpg)
+![image](./docs/images/Snipaste_2026-10-10_15-08-58.jpg)
 **modern_glass** 👇
-![image](./preview/Snipaste_2026-10-13_21-06-43.jpg)
+![image](./docs/images/Snipaste_2026-10-13_21-06-43.jpg)
 **modernz** 👇
 ![image](https://raw.githubusercontent.com/akFace/mpv.net.config/main/preview/Snipaste_2026-09-02_22-31-00.jpg)
 **uosc** 👇
-![image](./preview/Snipaste_2026-08-24_03-00-53.jpg)
-
-## Open-source project
-
-See also:
-
-- [equalizer-gui](https://github.com/akFace/equalizer-gui)
-- [mpv-menu-plugin-next](https://github.com/akFace/mpv-menu-plugin-next)
-- [switch-opts](./src/common/scripts/switch-opts.lua)
-- [interp_switch](./src/common/scripts/interp_switch.lua)
-- [skip-intro](./src/common/scripts/skip-intro.lua)
-- [merge-input](./src/common/scripts/merge-input.lua)
-- [play-with-mpv](https://github.com/akFace/play-with-mpv)
-- [scheme-handler-cross](https://github.com/akFace/scheme-handler-cross)
-
----
-
-Thanks to the following open-source projects for making this possible:
-
-- [mpv](https://github.com/mpv-player/mpv)
-- [thumbfast](https://github.com/po5/thumbfast)
-- [celebi](https://github.com/po5/celebi)
-- [uosc](https://github.com/tomasklaen/uosc)
-- [ModernZ](https://github.com/Samillion/ModernZ)
-- [ModernGlass](https://github.com/Demetter/ModernGlass)
-- [mpv-sub-assrt](https://github.com/dyphire/mpv-sub-assrt)
-- [uosc_danmaku](https://github.com/Tony15246/uosc_danmaku)
-- [Anime4K](https://github.com/bloc97/Anime4K)
-- [CuNNy](https://github.com/funnyplanter/CuNNy)
-- [ArtCNN](https://github.com/Artoriuz/ArtCNN)
-- [mpv360](https://github.com/kasper93/mpv360)
-- [recent-menu](https://github.com/natural-harmonia-gropius/recent-menu)
-- [awesome-mpv](https://github.com/stax76/awesome-mpv)
-- [dyphire/mpv-config](https://github.com/dyphire/mpv-config)
-- [mpv_PlayKit](https://github.com/hooke007/mpv_PlayKit)
-- [mpv guide](https://hooke007.github.io/official_man/index.html)
+![image](./docs/images/Snipaste_2026-08-24_03-00-53.jpg)
