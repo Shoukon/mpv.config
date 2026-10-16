@@ -13,7 +13,7 @@
 
 [🎯 Click to Download](https://github.com/akFace/mpv.config/releases) the theme you need. The following themes are currently available:
 
-Please download `xxx_en.zip` version, [How to add a localized language?](https://github.com/akFace/mpv.config/wiki/How-to-add-a-localized-language%3F)
+Please download `xxx_en.zip` version, [How to add a localized language?](https://github.com/akFace/mpv.config/issues/31)
 
 - `modernz`
 - `modern_glass`
