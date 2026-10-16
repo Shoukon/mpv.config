@@ -15,7 +15,7 @@
 
 ## Installation
 
-- 🎯 To check out docs, visit [Installation Guide](https://akface.github.io/mpv.config/docs/en/install.html)
+- 🎯 To check out docs, visit [Installation Guide](https://mpvConfig.github.io/docs/en/install.html)
 
 ## Feature
 
@@ -24,7 +24,7 @@
 - **Timeline Thumbnail Previews** — Preview video frames directly on the seekbar.
 - **Online Subtitles & Danmaku** — Built-in online Chinese subtitle search and danmaku loading from multiple sources.
 - **Anime4K Upscaling** — Enhance video quality in real time with Anime4K.
-- **Multiple Video Shaders** — Supports a wide range of video shaders and filters. [View the Shader Guide](https://akface.github.io/mpv.config/docs/en/shaders.html).
+- **Multiple Video Shaders** — Supports a wide range of video shaders and filters. [View the Shader Guide](https://mpvConfig.github.io/docs/en/shaders.html).
 - **Frame Interpolation** — Enjoy smoother playback with multiple interpolation modes.
 - **On-Demand Video Filters** — Load Anime4K, FSRCNNX, CuNNy, ArtCNN, and other filters directly from the right-click menu.
 - **360° VR Support** — Supports 360° VR panoramic videos.

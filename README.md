@@ -18,12 +18,12 @@
 
 ## 使用教程
 
-- [查看详细使用教程](https://akface.github.io/mpv.config/docs/install.html)
-- To check out docs, visit [Installation Guide](https://akface.github.io/mpv.config/docs/en)
+- [查看详细使用教程](https://mpvConfig.github.io/docs/install.html)
+- To check out docs, visit [Installation Guide](https://mpvConfig.github.io/docs/en)
 
 ## 官网主页
 
-🎉✨ [https://akFace.github.io/mpv.config](https://akface.github.io/mpv.config/)
+🎉✨ [https://mpvConfig.github.io](https://mpvConfig.github.io/)
 
 ## 主要功能
 
@@ -32,7 +32,7 @@
 - 集成进度条缩略图预览
 - 集成在线中文字幕搜索，全网弹幕在线加载
 - 集成 Anime4K 超分画质，实时提升画质
-- 支持多种视频着色器滤镜：[shaders 滤镜说明指南](https://akface.github.io/mpv.config/docs/shaders.html)
+- 支持多种视频着色器滤镜：[shaders 滤镜说明指南](https://mpvConfig.github.io/docs/shaders.html)
 - 支持插帧模式功能，提升流畅度
 - 视频滤镜/Anime4K/FSRCNNX/CuNNy/ArtCNN 等，可右键菜单按需加载
 - 支持 360°VR 全景视频
@@ -66,7 +66,7 @@
 
 ![image](./docs/images/preview.gif)
 
-🍭 更多特性： [https://akFace.github.io/mpv.config](https://akface.github.io/mpv.config/)
+🍭 更多特性： [https://mpvConfig.github.io](https://mpvConfig.github.io/)
 
 ## 下载最新版本
 
