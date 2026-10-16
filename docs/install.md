@@ -17,6 +17,8 @@
 - `modern_glass`
 - `uosc`
 
+📣 [查看主题预览](https://akface.github.io/mpv.config/docs/preview.html)
+
 每个主题皮肤压缩包均包含完整功能的配置，下载后解压。
 
 ### 3. 配置播放器

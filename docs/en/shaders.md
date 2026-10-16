@@ -35,7 +35,7 @@ Default mpv startup:
 > ❗ **Important**
 >
 > - This guide primarily reflects the latest version; older versions may differ. 🍭 [View the latest releases](https://github.com/akFace/mpv.config/releases)
-> - To check for updates in the player, right-click and select **Tools > Check for updates**. 🎯 [How to update to the latest version](https://github.com/akFace/mpv.config#%E5%A6%82%E4%BD%95%E6%9B%B4%E6%96%B0%E5%88%B0%E6%9C%80%E6%96%B0%E7%89%88)
+> - To check for updates in the player, right-click and select **Tools > Check for updates**. 🎯 [How to update to the latest version](https://akface.github.io/mpv.config/docs/en/update.html)
 > - Performance levels are **Low / Medium / High / Very High**, estimated as relative workloads when outputting 4K on a mid-range GPU (such as a GTX 1660 / RTX 3050).
 
 ---

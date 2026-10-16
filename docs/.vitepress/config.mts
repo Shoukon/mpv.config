@@ -45,7 +45,7 @@ export default defineConfig({
       },
     },
     en: {
-      label: "English",
+      label: "English-MT",
       lang: "en-US",
       dir: "ltr",
       themeConfig: {
