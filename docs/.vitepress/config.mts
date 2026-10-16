@@ -6,6 +6,11 @@ export default defineConfig({
   title: "mpv.config",
   description: "mpv.config — The configuration file of the mpv player",
 
+  markdown: {
+    languageAlias: {
+      conf: "ini", // 或者用 'bash'，取决于你的配置文件风格
+    },
+  },
   // 顶层 themeConfig 只放所有语言通用的配置
   themeConfig: {
     search: {
