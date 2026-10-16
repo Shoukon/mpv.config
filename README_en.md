@@ -24,7 +24,7 @@
 - **Timeline Thumbnail Previews** — Preview video frames directly on the seekbar.
 - **Online Subtitles & Danmaku** — Built-in online Chinese subtitle search and danmaku loading from multiple sources.
 - **Anime4K Upscaling** — Enhance video quality in real time with Anime4K.
-- **Multiple Video Shaders** — Supports a wide range of video shaders and filters. [View the Shader Guide](https://akface.github.io/mpv.config/docs/shaders.html).
+- **Multiple Video Shaders** — Supports a wide range of video shaders and filters. [View the Shader Guide](https://akface.github.io/mpv.config/docs/en/shaders.html).
 - **Frame Interpolation** — Enjoy smoother playback with multiple interpolation modes.
 - **On-Demand Video Filters** — Load Anime4K, FSRCNNX, CuNNy, ArtCNN, and other filters directly from the right-click menu.
 - **360° VR Support** — Supports 360° VR panoramic videos.
@@ -45,6 +45,6 @@
 **modern_glass** 👇
 ![image](./docs/images/Snipaste_2026-10-13_21-06-43.jpg)
 **modernz** 👇
-![image](https://raw.githubusercontent.com/akFace/mpv.net.config/main/preview/Snipaste_2026-09-02_22-31-00.jpg)
+![image](./docs/images/Snipaste_2026-09-02_22-31-00.jpg)
 **uosc** 👇
 ![image](./docs/images/Snipaste_2026-08-24_03-00-53.jpg)
