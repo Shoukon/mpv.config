@@ -207,6 +207,7 @@ pcall(function() overlay.z = tonumber(o.modal_z) or 1000000 end)
 
 local visible = false
 local items = {}
+local items_dirty = true
 local open_path = {}
 local rects = {}
 local hover_level, hover_index = nil, nil
@@ -218,6 +219,8 @@ local geometry_timer = nil
 local show_timer = nil
 local schedule_hover_open
 local last_osd_w, last_osd_h = 0, 0
+local current_vo = mp.get_property('current-vo')
+local video_track_present = mp.get_property_native('current-tracks/video') ~= nil
 
 ------------------------------------------------------------
 -- Liquid Glass background shader (mpv vo=gpu-next)
@@ -1042,10 +1045,16 @@ local function scroll_panel(level, delta)
     return true
 end
 
+local modal_mask_cache = { w = 0, h = 0, s = '' }
 local function draw_modal_mask(ow, oh)
     if not o.modal_mask then return '' end
+    if modal_mask_cache.w == ow and modal_mask_cache.h == oh then
+        return modal_mask_cache.s
+    end
     local path = string.format('m 0 0 l %.2f 0 l %.2f %.2f l 0 %.2f c', ow, ow, oh, oh)
-    return draw_path(path, ui.background, o.modal_mask_alpha, 0, 0, ui.background)
+    modal_mask_cache.s = draw_path(path, ui.background, o.modal_mask_alpha, 0, 0, ui.background)
+    modal_mask_cache.w, modal_mask_cache.h = ow, oh
+    return modal_mask_cache.s
 end
 
 -- 根据层级计算嵌套子菜单的透明度 (隔绝 if-else)
@@ -1060,8 +1069,7 @@ local function calc_panel_alpha(level)
     return math.floor(255 * (1 - opacity / 100) + 0.5)
 end
 
-local function draw_menu(list,x,y,level,ow,oh)
-    local w,h,layout,scale,meta = measure(list,ow,oh,level)
+local function draw_menu(list,x,y,level,ow,oh,w,h,layout,scale,meta)
     local margin = o.screen_margin * scale
     x=clamp(x,margin,ow-w-margin)
     y=clamp(y,margin,oh-h-margin)
@@ -1086,8 +1094,8 @@ local function draw_menu(list,x,y,level,ow,oh)
         and o.glass_blur
         and menu_glass.loaded
         and not menu_glass.failed
-        and mp.get_property('current-vo') == 'gpu-next'
-        and mp.get_property_native('current-tracks/video') ~= nil
+        and current_vo == 'gpu-next'
+        and video_track_present
     if glass_rim_active then
         out[#out+1] = draw_line(x+radius*0.72,y+0.8*scale,x+w-radius*0.72,y+0.8*scale, '#FFFFFF', ui.glass_highlight_alpha, math.max(0.7,0.8*scale))
     end
@@ -1208,7 +1216,7 @@ local function draw_menu(list,x,y,level,ow,oh)
         out[#out+1]=draw_path(round_rect(track_x,track_y,meta.scrollbar_width,track_h,rr),o.scrollbar_track,o.scrollbar_track_alpha,0,0,o.scrollbar_track)
         out[#out+1]=draw_path(round_rect(track_x,thumb_y,meta.scrollbar_width,thumb_h,rr),o.scrollbar_thumb,o.scrollbar_thumb_alpha,0,0,o.scrollbar_thumb)
     end
-    return table.concat(out,'\n'),w,h
+    return table.concat(out,'\n')
 end
 
 local function clear()
@@ -1312,21 +1320,24 @@ render = function()
     rects={}
     local root=items
     if type(root)~='table' or #root==0 then clear(); return end
-    if normalize_menu(root) == 0 then clear(); return end
+    if items_dirty then
+        items_dirty=false
+        if normalize_menu(root) == 0 then clear(); return end
+    end
 
-    local rw,rh,_,scale=measure(root,ow,oh,1)
-    local margin=o.screen_margin*scale
-    local x = anchor_x or (mx+2*scale)
-    local y = anchor_y or (my+2*scale)
-    
-    if x+rw>ow-margin then x=(anchor_x and anchor_x-rw-2*scale) or (mx-rw-2*scale) end
-    if y+rh>oh-margin then y=(anchor_y and anchor_y-rh-2*scale) or (my-rh-2*scale) end
+    local rw,rh,r_layout,r_scale,r_meta=measure(root,ow,oh,1)
+    local margin=o.screen_margin*r_scale
+    local x = anchor_x or (mx+2*r_scale)
+    local y = anchor_y or (my+2*r_scale)
+
+    if x+rw>ow-margin then x=(anchor_x and anchor_x-rw-2*r_scale) or (mx-rw-2*r_scale) end
+    if y+rh>oh-margin then y=(anchor_y and anchor_y-rh-2*r_scale) or (my-rh-2*r_scale) end
     x=clamp(x,margin,ow-rw-margin)
     y=clamp(y,margin,oh-rh-margin)
 
     local ass={}
     ass[#ass+1]=draw_modal_mask(ow,oh)
-    ass[#ass+1]=select(1,draw_menu(root,x,y,1,ow,oh))
+    ass[#ass+1]=draw_menu(root,x,y,1,ow,oh,rw,rh,r_layout,r_scale,r_meta)
 
     for level=2,#open_path+1 do
         local parent=rects[level-1]
@@ -1334,16 +1345,16 @@ render = function()
         local pidx=open_path[level-1]
         local child=pitems[pidx] and pitems[pidx].submenu or {}
         if parent and child then
-            local cw,ch,_,cscale=measure(child,ow,oh,level)
-            local gap=o.submenu_gap*cscale
+            local cw,ch,c_layout,c_scale,c_meta=measure(child,ow,oh,level)
+            local gap=o.submenu_gap*c_scale
             local cx=parent.x+parent.w+gap
-            if cx+cw>ow-o.screen_margin*cscale then cx=parent.x-cw-gap end
-            
+            if cx+cw>ow-o.screen_margin*c_scale then cx=parent.x-cw-gap end
+
             local pg=nil
             for _,g in ipairs(parent.layout or {}) do if g.index==pidx then pg=g;break end end
-            local cy=pg and (parent.y+pg.y-(parent.scroll_offset or 0)) or parent.y+o.padding_y*cscale
-            cy=clamp(cy,o.screen_margin*cscale,oh-ch-o.screen_margin*cscale)
-            ass[#ass+1]=select(1,draw_menu(child,cx,cy,level,ow,oh))
+            local cy=pg and (parent.y+pg.y-(parent.scroll_offset or 0)) or parent.y+o.padding_y*c_scale
+            cy=clamp(cy,o.screen_margin*c_scale,oh-ch-o.screen_margin*c_scale)
+            ass[#ass+1]=draw_menu(child,cx,cy,level,ow,oh,cw,ch,c_layout,c_scale,c_meta)
         end
     end
 
@@ -1459,13 +1470,11 @@ local function setup_bindings()
     bind('ENTER','menu-enter',activate_selected)
     bind('UP','menu-up',function()
         selected_index=next_selectable(menu_at(selected_level),selected_index,-1)
-        render()
         ensure_visible(selected_level, selected_index)
         render()
     end,{repeatable=true})
     bind('DOWN','menu-down',function()
         selected_index=next_selectable(menu_at(selected_level),selected_index,1)
-        render()
         ensure_visible(selected_level, selected_index)
         render()
     end,{repeatable=true})
@@ -1518,7 +1527,6 @@ local function setup_bindings()
             return
         end
         selected_index=next_selectable(menu_at(selected_level),selected_index,-1)
-        render()
         ensure_visible(selected_level, selected_index)
         render()
     end)
@@ -1530,7 +1538,6 @@ local function setup_bindings()
             return
         end
         selected_index=next_selectable(menu_at(selected_level),selected_index,1)
-        render()
         ensure_visible(selected_level, selected_index)
         render()
     end)
@@ -1577,6 +1584,7 @@ local function refresh_menu_snapshot()
     if ok and type(data) == 'table' then
         items = data
         normalize_menu(items)
+        items_dirty = false
         return true
     end
     return false
@@ -1680,8 +1688,13 @@ mp.add_timeout(0,function()
 end)
 
 mp.observe_property(menu_prop,'native',function(_,v)
-    if type(v)=='table' then items=v else items={} end
-    if type(items)=='table' then normalize_menu(items) end
+    if type(v)=='table' then
+        items=v
+        items_dirty=true
+    else
+        items={}
+        items_dirty=false
+    end
     if visible then render() end
 end)
 mp.observe_property('mouse-pos','native',function() on_mouse_move() end)
@@ -1724,12 +1737,18 @@ mp.observe_property('osd-dimensions','native',function()
     render()
 end)
 
-mp.observe_property('current-vo','string',function()
+mp.observe_property('current-vo','string',function(_,v)
+    current_vo = v
     if visible then
         menu_glass_install()
         menu_glass.sig = nil
         render()
     end
+end)
+
+mp.observe_property('current-tracks/video','native',function(_,v)
+    video_track_present = v ~= nil
+    if visible then render() end
 end)
 
 mp.observe_property('fullscreen','native',function()
@@ -2361,6 +2380,7 @@ msg.info('cross-platform menu backend v51 loaded as '..BACKEND_NAME)
 local function reload_menu()
     msg.info('menu: reload_menu() called')
     load_options()
+    modal_mask_cache.w = 0
     menu_glass.sig = nil
     if o.glass_enabled then menu_glass_install() end
 
