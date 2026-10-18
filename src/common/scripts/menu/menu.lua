@@ -1,9 +1,20 @@
--- mpv-menu-plugin: cross-platform mpv.net-inspired menu backend (v48)
+-- mpv-menu-plugin-next: cross-platform menu backend for mpv.
 -- Rendering model:
 --   * bind the ASS overlay canvas to the CURRENT valid OSD dimensions
 --   * never render while the OSD size is 0x0
 --   * all menu geometry, hit-testing and mouse coordinates use the same canvas
--- This keeps drawing/hit-testing aligned and avoids the giant-vector fallback seen on startup.
+-- Scaling model (uosc-style baselines + automatic resolution adaptation):
+--   * Windowed baseline: 36px, fullscreen baseline: 50px (uosc defaults).
+--   * Both baselines scale linearly with OSD height relative to 1080p,
+--     clamped to [1.0x, 2.8x]. This adapts to 4K/8K without any manual
+--     configuration while preserving uosc's default look at 1080p.
+--   * Setting menu_item_height / menu_item_height_fullscreen to a number
+--     disables the automatic scaling for that mode (explicit override).
+--   * BASE_ROW_HEIGHT (48) is the nominal reference the rest of this script's
+--     dimensions were written against. ui_scale() returns
+--     item_height / BASE_ROW_HEIGHT, so font/padding/arrow sizes all scale
+--     proportionally with the row height.
+--   * menu_font_scale is applied on top of all menu text, matching uosc.
 
 local mp = require('mp')
 local msg = require('mp.msg')
@@ -46,7 +57,12 @@ local o_defaults = {
     hover_border_width = 0,
     hover_border = '#00000000',
     shadow_blur = 7,
-    row_height = 47,
+    -- uosc-aligned menu sizing. 'auto' = scale uosc's 36/50 baselines with
+    -- OSD height relative to 1080p (clamped 1.0x .. 2.8x). A positive number
+    -- disables auto scaling for that mode and pins the row height.
+    menu_item_height = 47,
+    menu_item_height_fullscreen = 50,
+    menu_font_scale = 1,
     separator_height = 13,
     padding_x = 12,
     padding_y = 13,
@@ -58,7 +74,7 @@ local o_defaults = {
     arrow_char = '›',
     submenu_gap = 7,
     screen_margin = 11,
-    min_width = 378,
+    min_width = 350,
     max_width = 1080,
     max_visible_rows = 0,
     scroll_threshold = 0.80,
@@ -79,13 +95,20 @@ local o_defaults = {
     modal_mask = true,
     modal_mask_alpha = 255,
     modal_z = 1000000,
-    ui_scale = false,
-    design_width = 1920,
-    design_height = 1080,
-    min_ui_scale = 0.8,
-    max_ui_scale = 1.6,
     macos_font_scale = 1.4,
 }
+
+-- Nominal reference the whole layout was authored against. ui_scale() divides
+-- the actual row height by this value, so all downstream dimensions scale
+-- proportionally with the chosen uosc baseline.
+local BASE_ROW_HEIGHT = 47
+
+-- uosc's default baselines at 1080p.
+local WINDOW_ITEM_HEIGHT_1080 = 36
+local FULLSCREEN_ITEM_HEIGHT_1080 = 50
+-- Auto scaling bounds relative to 1080p. Upper bound keeps 8K+ displays sane.
+local AUTO_SCALE_MIN = 1.0
+local AUTO_SCALE_MAX = 2.8
 
 -- 对外共享的配置表：始终保持同一个 table 引用，
 -- reload 时只替换内容，所有闭包捕获的 o 都会看到新值。
@@ -178,114 +201,69 @@ local function ass_text(s)
     return s
 end
 
-local screen_size_cache = nil
-
-local function parse_resolution(text)
-    if not text then return nil end
-    local w,h = text:match('(%d+)%s*[xX×]%s*(%d+)')
-    if w and h then
-        return tonumber(w), tonumber(h)
-    end
+-- Parse a config value that may be 'auto' or a positive number.
+-- Returns nil for 'auto'/invalid so callers can fall back to auto scaling.
+local function numeric_or_nil(v)
+    if v == nil or v == 'auto' or v == '' then return nil end
+    local n = tonumber(v)
+    if n and n > 0 then return n end
     return nil
 end
 
-local function get_screen_size()
-    if screen_size_cache then
-        return screen_size_cache[1], screen_size_cache[2]
+-- uosc-style automatic item height, adapted to the current OSD size.
+--
+--   Windowed : 36 * clamp(oh / 1080, 1.0, 2.8)
+--   Fullscreen: 50 * clamp(oh / 1080, 1.0, 2.8)
+--
+-- At 1080p this reproduces uosc's defaults exactly (36 / 50). At 4K the
+-- baselines double (72 / 100), which keeps menus legible on large TVs while
+-- staying reasonable on 4K desktop monitors. The 2.8x ceiling covers 8K.
+-- An explicit numeric value in menu_item_height / menu_item_height_fullscreen
+-- overrides auto scaling for that mode.
+local function resolve_item_height(ow, oh)
+    local fullscreen = mp.get_property_native('fullscreen')
+
+    if fullscreen then
+        local explicit = numeric_or_nil(o.menu_item_height_fullscreen)
+        if explicit then return explicit end
+    else
+        local explicit = numeric_or_nil(o.menu_item_height)
+        if explicit then return explicit end
     end
 
-    local w,h
+    local h = tonumber(oh) or 1080
+    if h <= 0 then h = 1080 end
+    local f = clamp(h / 1080, AUTO_SCALE_MIN, AUTO_SCALE_MAX)
 
-    -- mpv provides display dimensions from the active display.
-    -- This is preferred because it works with HiDPI/Retina better than
-    -- querying external tools and does not depend on window size.
-    local dw = mp.get_property_native('display-width')
-    local dh = mp.get_property_native('display-height')
-    if type(dw) == 'number' and type(dh) == 'number' and dw > 0 and dh > 0 then
-        w,h = dw,dh
+    if fullscreen then
+        return FULLSCREEN_ITEM_HEIGHT_1080 * f
     end
-
-    -- Fallback for older mpv builds or platforms where display properties
-    -- are unavailable.
-    if not w or not h then
-        if platform == 'darwin' then
-            local r = utils.subprocess({
-                args = {'/usr/sbin/system_profiler', 'SPDisplaysDataType'},
-                cancellable = false,
-                capture_stdout = true,
-                capture_stderr = false,
-            })
-            if r and r.status == 0 then
-                w,h = parse_resolution(r.stdout)
-            end
-        elseif platform == 'linux' then
-            local r = utils.subprocess({
-                args = {'sh','-c','xrandr 2>/dev/null | grep -m1 -oE "[0-9]+x[0-9]+"'},
-                cancellable = false,
-                capture_stdout = true,
-                capture_stderr = false,
-            })
-            if r and r.status == 0 then
-                w,h = parse_resolution(r.stdout)
-            end
-        elseif platform == 'windows' then
-            local r = utils.subprocess({
-                args = {'powershell','-NoProfile','-Command',
-                    '[System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Width.ToString()+"x"+[System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Height.ToString()'},
-                cancellable = false,
-                capture_stdout = true,
-                capture_stderr = false,
-            })
-            if r and r.status == 0 then
-                w,h = parse_resolution(r.stdout)
-            end
-        end
-    end
-
-    if w and h and w > 0 and h > 0 then
-        screen_size_cache = {w,h}
-        return w,h
-    end
-
-    return nil,nil
+    return WINDOW_ITEM_HEIGHT_1080 * f
 end
 
+-- Ratio between the resolved row height and the script's nominal reference.
+-- All downstream dimensions (font, padding, arrow, etc.) are written against
+-- BASE_ROW_HEIGHT, so multiplying them by this scale reproduces the uosc look
+-- at the resolved baseline.
 local function ui_scale(ow, oh)
-    local s
-
-    if o.ui_scale ~= 'auto' then
-        local n = tonumber(o.ui_scale)
-        s = (n and n > 0) and n or 1
-    else
-        -- Prefer physical screen resolution. If unavailable, keep the old OSD-size method.
-        local sw,sh = get_screen_size()
-        if not sw or not sh then
-            sw,sh = ow,oh
-        end
-
-        if not sw or not sh or sw <= 0 or sh <= 0 then
-            s = 1
-        else
-            local dw = tonumber(o.design_width) or 1920
-            local dh = tonumber(o.design_height) or 1080
-            local sx = sw / dw
-            local sy = sh / dh
-            s = math.min(sx, sy)
-            s = clamp(s, tonumber(o.min_ui_scale) or 0.8, tonumber(o.max_ui_scale) or 2.5)
-        end
+    if not ow or not oh or ow <= 0 or oh <= 0 then
+        return 1
     end
-
-    -- Apply the macOS font scale for both automatic and explicitly configured UI scales.
+    local s = resolve_item_height(ow, oh) / BASE_ROW_HEIGHT
     if platform == 'darwin' then
         s = s * (tonumber(o.macos_font_scale) or 1.0)
     end
-
     return s
 end
 
+local function menu_font_scale_factor()
+    local m = tonumber(o.menu_font_scale)
+    if not m or m <= 0 then return 1 end
+    return m
+end
 
 local function text_width(s, scale)
-    local fs = o.font_size * (scale or 1)
+    local fs = o.font_size * (scale or 1) * menu_font_scale_factor()
     local w = 0
     for ch in tostring(s or ''):gmatch('[%z\1-\127\194-\244][\128-\191]*') do
         if ch:match('%s') then w = w + 0.32
@@ -352,8 +330,11 @@ local function text_tag(x,y,text,color,size,align,bold,italic,alpha)
     local b = bold == nil and o.bold or bold
     local i = italic == nil and o.italic or italic
     local a = alpha == nil and 0 or alpha
+    -- menu_font_scale applies on top of the caller-provided size, mirroring
+    -- uosc's menu_font_scale behavior for every menu string.
+    local s = size * menu_font_scale_factor()
     return string.format('{\\an%s\\pos(%.2f,%.2f)\\fn%s\\fs%.1f\\b%s\\i%s\\bord0\\shad0\\1c%s\\1a&H%02X&}%s',
-        align or '5', x,y,fn,size,b and '1' or '0',i and '1' or '0',ass_color(color),clamp(a,0,255),ass_text(text))
+        align or '5', x,y,fn,s,b and '1' or '0',i and '1' or '0',ass_color(color),clamp(a,0,255),ass_text(text))
 end
 
 
@@ -527,8 +508,7 @@ end
 local function build_layout(list, scale, level)
     scale = scale or 1
     local layout = {}
-    local desired_row_h = o.row_height * scale
-    local row_h = desired_row_h
+    local row_h = BASE_ROW_HEIGHT * scale
     local sep_h = o.separator_height * scale
     local pad_y = o.padding_y * scale
     local top_pad = pad_y
@@ -702,7 +682,7 @@ end
 local function scroll_panel(level, delta)
     local r=rects[level]
     if not r or not r.scrollable then return false end
-    local step = (r.row_h or o.row_height) * tonumber(o.scroll_step or 1)
+    local step = (r.row_h or BASE_ROW_HEIGHT) * tonumber(o.scroll_step or 1)
     if step <= 0 then step = r.row_h or 1 end
     local new_offset = clamp((r.scroll_offset or 0) + delta*step, 0, r.max_scroll or 0)
     if math.abs(new_offset - (r.scroll_offset or 0)) < 0.01 then return false end
@@ -958,8 +938,7 @@ local function prepare_initial_playlist_scrolls(list, ow, oh, level)
                 and it._playlist_total > 1 then
 
                 local _, _, layout, scale = measure(child, ow, oh, child_level)
-                local row_h = o.row_height * scale
-                local sep_h = o.separator_height * scale
+                local row_h = BASE_ROW_HEIGHT * scale
                 local pad_y = o.padding_y * scale
                 local header_h = (type(it._playlist_header) == 'string' and it._playlist_header ~= '') and row_h or 0
 
@@ -1418,9 +1397,14 @@ mp.register_script_message('hide',hide)
 mp.register_script_message('geometry-debug',function()
     local ow,oh=get_osd()
     local x,y= get_mouse()
-    msg.info(string.format('OSD=%s | canvas=OSD | mouse=%.1f,%.1f | overlay.res=%d,%d',
-        ow and oh and (ow..'x'..oh) or '0x0',x,y,overlay.res_x,overlay.res_y))
-    mp.osd_message(string.format('OSD %s | canvas OSD | mouse %.0f,%.0f',ow and oh and (ow..'x'..oh) or '0x0',x,y),2)
+    local item_h = (ow and oh) and resolve_item_height(ow, oh) or WINDOW_ITEM_HEIGHT_1080
+    local scale = (ow and oh) and ui_scale(ow, oh) or 1
+    local font_h = o.font_size * scale * menu_font_scale_factor()
+    msg.info(string.format('OSD=%s | canvas=OSD | mouse=%.1f,%.1f | overlay.res=%d,%d | item_h=%.1f | font=%.1f | scale=%.3f | fullscreen=%s',
+        ow and oh and (ow..'x'..oh) or '0x0', x, y, overlay.res_x, overlay.res_y,
+        item_h, font_h, scale, tostring(mp.get_property_native('fullscreen'))))
+    mp.osd_message(string.format('OSD %s | item_h=%.0f | font=%.0f | scale=%.2f | mouse %.0f,%.0f',
+        ow and oh and (ow..'x'..oh) or '0x0', item_h, font_h, scale, x, y), 2)
 end)
 
 mp.add_timeout(0,function()
@@ -1472,6 +1456,20 @@ mp.observe_property('osd-dimensions','native',function()
     end
     render()
 end)
+
+-- fullscreen toggles switch the auto-scaling baseline from windowed to
+-- fullscreen. OSD dimensions often stay the same across such toggles, so a
+-- dedicated listener is required to re-layout and repaint.
+mp.observe_property('fullscreen','native',function()
+    if not visible then return end
+    local ow,oh = get_osd()
+    if ow and oh then
+        recompute_open_playlist_scrolls(ow,oh)
+    end
+    rects = {}
+    render()
+end)
+
 mp.observe_property('playlist-playing-pos','number',function()
     if not visible then return end
     local ow,oh=get_osd()
@@ -2174,7 +2172,7 @@ mp.register_event('shutdown',hide)
 -- submenu polling/scroll correction itself.
 mp.add_periodic_timer(0.08,function() if visible then on_mouse_move() end end)
 
-msg.info('cross-platform menu backend v43 loaded as '..BACKEND_NAME)
+msg.info('cross-platform menu backend v51 loaded as '..BACKEND_NAME)
 
 ------------------------------------------------------------
 -- 暴露给外部的 reload 接口
@@ -2193,9 +2191,9 @@ local function reload_menu()
     -- 重新跑 opts.read_options(o, 'menu_style')
     load_options()
 
-    -- 屏幕尺寸缓存可以保留；但如果你改了屏幕或热插拔显示器，
-    -- 想强制重新探测，取消下面这行的注释：
-    -- screen_size_cache = nil
+    -- 界面尺寸现在由 menu_item_height / menu_item_height_fullscreen 决定。
+    -- 默认 'auto' 会按 OSD 高度相对 1080p 自动缩放（上限 2.8x）；
+    -- 写成数字则固定为该像素值。
 
     -- 如果菜单当前可见，立即用新样式重绘
     if visible then
