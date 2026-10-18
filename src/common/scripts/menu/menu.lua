@@ -1080,8 +1080,15 @@ local function draw_menu(list,x,y,level,ow,oh)
     -- 面板背景 (读取 ui 和嵌套层级透明度)
     out[#out+1] = draw_path(round_rect(x,y,w,h,radius), ui.background, calc_panel_alpha(level), ui.border_width*scale, 0, ui.border, ui.border_alpha)
     
-    -- 玻璃顶部高光
-    if ui.glass_top_highlight then
+    -- 玻璃顶部高光：仅当玻璃模糊着色器真正生效时才绘制。
+    -- idle / 无视频 / vo 非 gpu-next / shader 未加载时，黑底下会多出一条白线。
+    local glass_rim_active = ui.glass_top_highlight
+        and o.glass_blur
+        and menu_glass.loaded
+        and not menu_glass.failed
+        and mp.get_property('current-vo') == 'gpu-next'
+        and mp.get_property_native('current-tracks/video') ~= nil
+    if glass_rim_active then
         out[#out+1] = draw_line(x+radius*0.72,y+0.8*scale,x+w-radius*0.72,y+0.8*scale, '#FFFFFF', ui.glass_highlight_alpha, math.max(0.7,0.8*scale))
     end
 

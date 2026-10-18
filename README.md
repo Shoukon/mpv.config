@@ -21,9 +21,10 @@
 - [查看详细使用教程](https://mpvConfig.github.io/docs/install.html)
 - To check out docs, visit [Installation Guide](https://mpvConfig.github.io/docs/en)
 
-## 官网主页
+## 主页
 
-🎉✨ [https://mpvconfig.github.io](https://mpvConfig.github.io/)
+- 🎉 官网主页：[https://mpvconfig.github.io](https://mpvConfig.github.io/)
+- 📔 文档主页：[https://mpvconfig.github.io/docs](https://mpvconfig.github.io/docs/)
 
 ## 主要功能
 
@@ -44,15 +45,15 @@
 
 ## 主题预览截图
 
-### 主题皮肤（modernz）
+### 主题皮肤 modernz
 
 ![image](./docs/images/Snipaste_2026-03-16_20-32-59.jpg)
 
-### 主题皮肤（uosc）
+### 主题皮肤 uosc
 
 ![image](./docs/images/Snipaste_2026-08-24_03-00-53.jpg)
 
-### 主题皮肤 （modern_glass）
+### 主题皮肤 modern_glass
 
 ![image](./docs/images/Snipaste_2026-10-13_21-06-43.jpg)
 
