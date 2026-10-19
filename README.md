@@ -33,8 +33,8 @@
 - 集成进度条缩略图预览
 - 集成在线中文字幕搜索，全网弹幕在线加载
 - 集成 Anime4K 超分画质，实时提升画质
-- 支持多种视频着色器滤镜：[shaders 滤镜说明指南](https://mpvConfig.github.io/docs/shaders.html)
-- 支持插帧模式功能，提升流畅度
+- 支持多种视频着色器滤镜 ⇢ [shaders 滤镜说明指南](https://mpvConfig.github.io/docs/shaders.html)
+- 支持插帧模式功能 ⇢ [实时插帧/补帧功能说明](https://mpvconfig.github.io/docs/Interpolation.html)
 - 视频滤镜/Anime4K/FSRCNNX/CuNNy/ArtCNN 等，可右键菜单按需加载
 - 支持 360°VR 全景视频
 - 可视化调节 eq 均衡器、声道切换、自动 HDR、解码切换、调色等常用功能
