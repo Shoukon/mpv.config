@@ -18,17 +18,21 @@ const SKINS = ["modernz", "uosc", "modern_glass"];
  */
 const INPUT_CONFIGS = [
   // 默认中文版
-  { suffix: "zh", file: "input.conf" },
+  {
+    suffix: "zh",
+    file: "input.conf",
+    mpvConf: `script-opts=uosc-controls="play-pause,menu,gap,subtitles,<has_many_audio>audio,<has_many_video>video,<has_many_edition>editions,<stream>stream-quality,button:danmaku,button:danmaku_menu,cycle:toggle_on:show_danmaku@uosc_danmaku:on=toggle_on/off=toggle_off?弹幕开关,gap,space,speed,space,shuffle,loop-playlist,loop-file,toggle:push_pin:ontop,gap,prev,items,next,gap,fullscreen"`,
+  },
   // 英文版
   {
     suffix: "en",
-    file: "input-en.conf",
+    file: "input_en.conf",
     mpvConf: "script-opts = modernz-language=en,uosc-languages=en",
   },
   // 按需继续添加，例如：
   // {
   //   suffix: "jp",
-  //   file: "input-jp.conf",
+  //   file: "input_jp.conf",
   //   mpvConf: "script-opts = modernz-language=jp,uosc-languages=jp",
   // }
 ];

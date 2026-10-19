@@ -4,7 +4,7 @@
   <img alt="mpv 0.40+" src="https://img.shields.io/badge/mpv-0.40%2B-2b2d33?style=flat-square&labelColor=8934D9">
   <img alt="Windows, macOS, Linux" src="https://img.shields.io/badge/platform-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2b2d33?style=flat-square&labelColor=008040">
   <img alt="License LGPL-2.1" src="https://img.shields.io/badge/license-LGPL--2.1-2b2d33?style=flat-square&labelColor=C7690C">
-  <a href="https://github.com/akFace/mpv.config/releases"><img alt="Releases" src="https://badgen.net/github/release/akFace/mpv.config"></a>
+  <a href="https://github.com/akFace/mpv.config/releases"><img alt="Releases" src="https://flat.badgen.net/github/release/akFace/mpv.config"></a>
 </p>
 
 > The configuration file of the mpv player supports Windows, macOS, Linux, with a consistent context menu feature across all platforms.
@@ -16,6 +16,11 @@
 ## Installation
 
 - 🎯 To check out docs, visit [Installation Guide](https://mpvConfig.github.io/docs/en/install.html)
+
+## Home Pages
+
+- 🎉 Official website: [https://mpvconfig.github.io](https://mpvConfig.github.io/)
+- 📔 Documentation: [https://mpvconfig.github.io/docs](https://mpvconfig.github.io/docs/en)
 
 ## Feature
 
@@ -42,9 +47,9 @@
 
 ![image](./docs/images/Snipaste_2026-09-02_22-25-41.jpg)
 ![image](./docs/images/Snipaste_2026-10-10_15-08-58.jpg)
-**modern_glass** 👇
+**modern_glass** ⇣⇣
 ![image](./docs/images/Snipaste_2026-10-13_21-06-43.jpg)
-**modernz** 👇
+**modernz** ⇣⇣
 ![image](./docs/images/Snipaste_2026-09-02_22-31-00.jpg)
-**uosc** 👇
+**uosc** ⇣⇣
 ![image](./docs/images/Snipaste_2026-08-24_03-00-53.jpg)

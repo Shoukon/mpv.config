@@ -11,7 +11,7 @@
   <img alt="mpv 0.40+" src="https://img.shields.io/badge/mpv-0.40%2B-2b2d33?style=flat-square&labelColor=8934D9">
   <img alt="Windows, macOS, Linux" src="https://img.shields.io/badge/platform-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2b2d33?style=flat-square&labelColor=008040">
   <img alt="License LGPL-2.1" src="https://img.shields.io/badge/license-LGPL--2.1-2b2d33?style=flat-square&labelColor=C7690C">
-  <a href="https://github.com/akFace/mpv.config/releases"><img alt="Releases" src="https://badgen.net/github/release/akFace/mpv.config"></a>
+  <a href="https://github.com/akFace/mpv.config/releases"><img alt="Releases" src="https://flat.badgen.net/github/release/akFace/mpv.config"></a>
 </p>
 
 ### 中文 | [English](https://github.com/akFace/mpv.config/blob/main/README_en.md)
@@ -21,9 +21,10 @@
 - [查看详细使用教程](https://mpvConfig.github.io/docs/install.html)
 - To check out docs, visit [Installation Guide](https://mpvConfig.github.io/docs/en)
 
-## 官网主页
+## 主页
 
-🎉✨ [https://mpvConfig.github.io](https://mpvConfig.github.io/)
+- 🎉 官网主页：[https://mpvconfig.github.io](https://mpvConfig.github.io/)
+- 📔 文档主页：[https://mpvconfig.github.io/docs](https://mpvconfig.github.io/docs/)
 
 ## 主要功能
 
@@ -44,15 +45,15 @@
 
 ## 主题预览截图
 
-### 主题皮肤（modernz）
+### 主题皮肤 modernz
 
 ![image](./docs/images/Snipaste_2026-03-16_20-32-59.jpg)
 
-### 主题皮肤（uosc）
+### 主题皮肤 uosc
 
 ![image](./docs/images/Snipaste_2026-08-24_03-00-53.jpg)
 
-### 主题皮肤 （modern_glass）
+### 主题皮肤 modern_glass
 
 ![image](./docs/images/Snipaste_2026-10-13_21-06-43.jpg)
 
@@ -66,11 +67,11 @@
 
 ![image](./docs/images/preview.gif)
 
-🍭 更多特性： [https://mpvConfig.github.io](https://mpvConfig.github.io/)
+🍭 更多特性： [https://mpvconfig.github.io](https://mpvConfig.github.io/)
 
 ## 下载最新版本
 
-[![Keyboard Shortcuts](https://img.shields.io/github/v/release/akFace/mpv.config?style=flat-square&labelColor=8934D9&label=Releases)](https://github.com/akFace/mpv.config/releases)
+[![Keyboard Shortcuts](https://flat.badgen.net/github/release/akFace/mpv.config)](https://github.com/akFace/mpv.config/releases)
 
 ## Open-source project
 

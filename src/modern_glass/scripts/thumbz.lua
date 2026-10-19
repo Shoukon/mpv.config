@@ -50,7 +50,7 @@ local o = {
     storyboard = 120,         -- thumbnails pre-rendered across the file once the controls appear (0 = off)
     storyboard_gap = 5,       -- at least this many seconds between storyboard thumbnails
     cache_size = 200,         -- thumbnails kept on disk for the current file (minimum 2)
-    hwdec = "auto",           -- renderer decoding: auto (same hardware decoder as the player), no, or an mpv --hwdec value
+    hwdec = "auto",           -- renderer decoding: auto (software below 1080p, else the player's hardware decoder), no, or an mpv --hwdec value
     threads = 2,              -- decoder threads in the renderer for software decoding (0 = automatic)
     scaler = "bilinear",      -- downscaling: fast_bilinear, bilinear, bicubic, area
     tone_mapping = "auto",    -- HDR to SDR: auto, no, clip, linear, gamma, reinhard, hable, mobius
@@ -115,7 +115,7 @@ local scheduler_source = [=[
 -- While paused, mpv encodes exactly one frame per completed seek, and every frame
 -- gets its own numbered file, so completed seeks and frame files line up one-to-one
 -- and in order. That makes it safe to abandon a slow seek for a newer request.
-local CMD, RES, OUT_PREFIX, JOB, IDLE_QUIT = %q, %q, %q, %q, %d
+local CMD, RES, OUT_PREFIX, JOB, IDLE_QUIT, POKED = %q, %q, %q, %q, %d, %s
 local utils = require "mp.utils"
 
 local function report(line)
@@ -312,16 +312,17 @@ local function read_commands()
     return true
 end
 
--- poll quickly while requests are coming in, back off when idle
+-- poll quickly while requests are coming in, back off when idle. Where the main player
+-- pokes us for every request (Windows), polling only has to notice that it's gone.
 local timer
-timer = mp.add_periodic_timer(0.008, function()
+timer = mp.add_periodic_timer(POKED and 0.5 or 0.008, function()
     read_commands()
     local idle = mp.get_time() - last_activity
     if IDLE_QUIT > 0 and idle > IDLE_QUIT and not (issued or executing or waiting[1]) then
         mp.command("quit")
         return
     end
-    local interval = idle < 3 and 0.008 or (idle < 30 and 0.1 or 0.5)
+    local interval = (POKED or idle >= 30) and 0.5 or (idle < 3 and 0.008 or 0.1)
     if timer.timeout ~= interval then
         timer.timeout = interval
         timer:kill()
@@ -348,7 +349,7 @@ local no_tonemap = false      -- HDR filters unavailable in this mpv's FFmpeg
 local announced = nil
 
 local gen = 0                 -- bumps on every file/config change
-local step = 1                -- seconds per cache slot (fixed per generation)
+local step = 1                -- seconds per slot, which paces requests and the storyboard (fixed per generation)
 local signature = nil         -- render configuration the cache belongs to
 
 local run = nil               -- files of the current renderer run
@@ -362,7 +363,7 @@ local res_pos, res_rest = 0, ""
 
 local next_id = 1
 local jobs = {}               -- id -> {slot, time, exact, gen, init, bg}
--- rendered thumbnails, by id: "e<slot>" = exact frame for a cache slot,
+-- rendered thumbnails, by id: "e<ms>" = the exact frame for a hovered time,
 -- "k<ms>" = a keyframe; entries are {path, exact, actual, used}
 local cache = {}
 local cache_count = 0
@@ -412,6 +413,10 @@ local function keyframe_id(actual)
     return "k" .. math.floor(actual * 1000 + 0.5)
 end
 
+local function exact_id(time)
+    return "e" .. math.floor(time * 1000 + 0.5)
+end
+
 ------------------------------------------------------------------------------
 -- Size, filters and what the thumbnails should look like
 ------------------------------------------------------------------------------
@@ -448,6 +453,14 @@ end
 
 local tone_curves = {clip = true, linear = true, gamma = true, reinhard = true, hable = true, mobius = true}
 
+-- HDR to SDR at thumbnail size, ending in BGRA; 4:4:4 first: zscale rejects odd sizes
+-- (e.g. 200x113) in subsampled formats
+local function tone_map_filters()
+    local curve = tone_curves[o.tone_mapping] and o.tone_mapping or "hable"
+    return "format=yuv444p10le,zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709," ..
+        "tonemap=tonemap=" .. curve .. ":desat=0,zscale=t=bt709:m=bt709:r=pc,format=bgra"
+end
+
 local function build_vf(sz)
     local chain = {}
 
@@ -474,10 +487,7 @@ local function build_vf(sz)
 
     -- tone-map at thumbnail size, which is far cheaper than at full resolution
     if tone_map_active() then
-        local curve = tone_curves[o.tone_mapping] and o.tone_mapping or "hable"
-        -- 4:4:4 first: zscale rejects odd sizes (e.g. 200x113) in subsampled formats
-        chain[#chain + 1] = "format=yuv444p10le,zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709," ..
-            "tonemap=tonemap=" .. curve .. ":desat=0,zscale=t=bt709:m=bt709:r=pc,format=bgra"
+        chain[#chain + 1] = tone_map_filters()
         -- all in one FFmpeg graph: in --vf, "format" is mpv's own converter, and splitting
         -- the chain there would carry linear light through 10-bit YUV (wrong colors, banding)
         return "lavfi=[" .. table.concat(chain, ",") .. "]"
@@ -619,10 +629,10 @@ local function closest(time)
     return best, best_d or math.huge
 end
 
--- what to show for a time: the slot's exact frame if there is one (final), otherwise
+-- what to show for a time: its exact frame if there is one (final), otherwise
 -- whatever on disk is closest in time. Returns entry, distance (s), final.
-local function best_for(time, slot)
-    local exact = cache["e" .. slot]
+local function best_for(time)
+    local exact = cache[exact_id(time)]
     if exact then return exact, 0, true end
     local best, d = closest(time)
     return best, d, d <= half_frame()
@@ -736,9 +746,10 @@ local function add_if(args, name, value)
     if has_option(name) then args[#args + 1] = "--" .. name .. "=" .. value end
 end
 
--- Hardware decoding in the renderer. "auto" uses the copy-back variant of the decoder
--- the player itself is using (so e.g. a laptop never wakes a second GPU just for
--- thumbnails), then mpv's own safe choice, then software decoding.
+-- Decoding in the renderer. "auto" decodes videos below 1080p on the CPU, which is
+-- quicker there than copying every frame back from the GPU, and larger ones with the
+-- copy-back variant of the decoder the player itself is using (so e.g. a laptop never
+-- wakes a second GPU just for thumbnails), then mpv's own safe choice, then software.
 local copy_variants = {
     nvdec = "nvdec-copy", cuda = "nvdec-copy", d3d11va = "d3d11va-copy", dxva2 = "dxva2-copy",
     vaapi = "vaapi-copy", videotoolbox = "videotoolbox-copy",
@@ -746,6 +757,8 @@ local copy_variants = {
 
 local function renderer_hwdec()
     if o.hwdec ~= "auto" then return o.hwdec end
+    local p = props["video-out-params"]
+    if p.w * p.h < 1920 * 1080 then return "no" end
     local api = (mp.get_property("hwdec-current") or ""):gsub("%-copy$", "")
     local copy = copy_variants[api]
     -- a list of decoders to try in order needs mpv 0.36+ (where the option is a list)
@@ -773,7 +786,8 @@ local function spawn(time)
         broken = true
         return false
     end
-    f:write(string.format(scheduler_source, files.cmd, files.res, files.out_prefix, base .. "_", math.floor(o.idle_quit)))
+    f:write(string.format(scheduler_source, files.cmd, files.res, files.out_prefix, base .. "_", math.floor(o.idle_quit),
+                          tostring(is_windows)))
     f:close()
     f = io.open(files.res, "wb")
     if f then f:close() end
@@ -796,8 +810,7 @@ local function spawn(time)
         "--pause", "--keep-open=always", "--start=" .. string.format("%.3f", time),
         "--hr-seek=" .. (exact and "yes" or "no"),
         "--aid=no", "--sid=no", "--demuxer-readahead-secs=0", "--demuxer-max-bytes=128KiB",
-        "--vd-lavc-skiploopfilter=all", "--vd-lavc-fast",
-        "--vd-lavc-threads=" .. math.floor(o.threads), "--hwdec=" .. renderer_hwdec(),
+        "--vd-lavc-fast", "--vd-lavc-threads=" .. math.floor(o.threads), "--hwdec=" .. renderer_hwdec(),
         "--vf=" .. build_vf(size), "--video-rotate=" .. (props["video-rotate"] or 0),
         "--ovc=rawvideo", "--of=image2", "--ofopts=atomic_writing=1", "--o=" .. files.out_prefix .. "%d.out",
         "--scripts=" .. files.helper,
@@ -829,32 +842,43 @@ local function spawn(time)
 
     spawned, ready, alive = true, false, false
     local started = mp.get_time()
+    local tone_mapped = tone_map_active()
     poll_timer:resume()
 
     mp.command_native_async({name = "subprocess", args = args, playback_only = true,
                              capture_stdout = true, capture_stderr = true},
         function(_, result)
+            -- decided first: stop_renderer marks every run it ends as stopped
+            local expected = files.stopped or (result and result.killed_by_us)
             if run == files then stop_renderer() end  -- it quit by itself (idle) or crashed
             if files.alive then failures = 0 end
-            if files.alive or files.stopped or (result and result.killed_by_us) then return end
+            if files.alive or expected then return end
             if run ~= nil then return end  -- a newer run already took over
-            -- this run never got going: try the next mpv candidate, then give up
             local out = result and ((result.stderr or "") .. (result.stdout or "")) or ""
             local err = out:match("[^\r\n]+") or (result and result.error_string) or "unknown error"
-            msg.warn(string.format("renderer '%s' failed after %.2fs: %s", exe, mp.get_time() - started, err))
-            failures = failures + 1
-            if niced then
-                use_nice = false  -- try the same mpv again without nice
-            elseif #mpv_candidates > 1 then
-                table.remove(mpv_candidates, 1)
-            end
-            if failures >= 3 then
-                broken = true
-                msg.error("thumbnails disabled: could not start the renderer (see mpv_path in thumbz.conf)")
+            if tone_mapped then
+                -- an FFmpeg without zscale can't make the HDR filters, and the renderer
+                -- quits at once: carry on without tone mapping
+                msg.warn("HDR tone-mapping failed in the renderer (" .. err .. "); continuing without it")
+                no_tonemap = true
                 reconfigure()
-            elseif want and visible then
-                spawn(want.time)
+            else
+                -- this run never got going: try the next mpv candidate, then give up
+                msg.warn(string.format("renderer '%s' failed after %.2fs: %s", exe, mp.get_time() - started, err))
+                failures = failures + 1
+                if niced then
+                    use_nice = false  -- try the same mpv again without nice
+                elseif #mpv_candidates > 1 then
+                    table.remove(mpv_candidates, 1)
+                end
+                if failures >= 3 then
+                    broken = true
+                    msg.error("thumbnails disabled: could not start the renderer (see mpv_path in thumbz.conf)")
+                    reconfigure()
+                    return
+                end
             end
+            if want and visible then spawn(want.time) end
         end)
     return true
 end
@@ -863,9 +887,15 @@ end
 -- Requests, storyboard and results
 ------------------------------------------------------------------------------
 
-local function job_pending_for(slot, exact)
+-- is a render on its way that makes this one unnecessary? An exact frame stands only
+-- for its own time; any render in the slot stands for a keyframe
+local function job_pending_for(time, slot, exact)
     for _, job in pairs(jobs) do
-        if job.slot == slot and (job.exact or not exact) then return true end
+        if exact then
+            if job.exact and exact_id(job.time) == exact_id(time) then return true end
+        elseif job.slot == slot then
+            return true
+        end
     end
     return false
 end
@@ -874,7 +904,7 @@ end
 -- abandoned as soon as a newer request comes in) or "bg" (storyboard keyframe)
 local function request(time, slot, kind)
     local exact = kind == "exact" or kind == "refine"
-    if job_pending_for(slot, exact) then return end
+    if job_pending_for(time, slot, exact) then return end
     if not spawned then
         if not spawn(time) then return end
         -- starting up renders this position already (as an exact frame in exact mode)
@@ -936,7 +966,7 @@ local function pump()
         local slot = order[storyboard.pos]
         storyboard.pos = storyboard.pos + 1
         -- skip spots an earlier render already covers
-        local _, d = best_for(slot * step, slot)
+        local _, d = best_for(slot * step)
         if fast_render_helps(slot * step, d) then
             request(slot * step, slot, "bg")
             return
@@ -956,14 +986,14 @@ local function on_done(id, actual)
     local entry = {path = path, exact = job.exact, slot = job.slot, actual = actual or job.time, used = mp.get_time()}
     msg.debug(string.format("rendered %s %.3f -> %.3f", job.exact and "exact" or "keyframe", job.time, entry.actual))
     if job.exact then
-        store("e" .. job.slot, entry)
+        store(exact_id(job.time), entry)
     else
         learn_keyframe(job.time, entry.actual)
         store(keyframe_id(entry.actual), entry)
     end
     if visible and want then
         -- show whatever is now closest to the pointer: the image only ever gets closer
-        local best, d, final = best_for(want.time, want.slot)
+        local best, d, final = best_for(want.time)
         if final or d <= stand_in_limit() then
             draw(best.path, want.x, want.y)
         elseif not job.bg then
@@ -1042,12 +1072,12 @@ local function hover(time, x, y)
     storyboard_start()  -- the seekbar is in use: fill in the rest of the bar in idle moments
     local slot = slot_for(time)
     local moved = not want or want.time ~= time
-    local refined = want and want.slot == slot and want.refined
+    local refined = not moved and want.refined
     want = {time = time, slot = slot, x = x, y = y, refined = refined}
 
     -- this spot's exact frame, or else the closest thing on disk (a storyboard frame,
     -- or the keyframe this spot starts from when an earlier render already found it)
-    local entry, d, final = best_for(time, slot)
+    local entry, d, final = best_for(time)
     if entry and (final or d <= stand_in_limit()) then
         entry.used = mp.get_time()
         draw(entry.path, x, y)
@@ -1076,13 +1106,13 @@ end
 local function on_rest()
     if not visible or not want then return end
     resting = true
-    local _, d, final = best_for(want.time, want.slot)
+    local _, d, final = best_for(want.time)
     if final then return end
     if exact_mode() then
         request(want.time, want.slot, "exact")
     elseif o.precise == "yes" then
         refine(want)  -- queued right behind a keyframe render that may still be on its way
-    elseif not job_pending_for(want.slot, false) and needs_exact(d, final) then
+    elseif not job_pending_for(want.time, want.slot, false) and needs_exact(d, final) then
         refine(want)  -- otherwise on_done decides once the keyframe is in
     end
 end
@@ -1209,7 +1239,7 @@ end
 local function cover_path(path)
     local info = utils.file_info(path)
     if not info or not info.is_file then return nil end
-    local key = "2|" .. path .. "|" .. info.size .. "|" .. info.mtime  -- "2": the corner radius
+    local key = "3|" .. path .. "|" .. info.size .. "|" .. info.mtime  -- "3": how covers are made (rotation, HDR)
     local h1, h2 = 0, 0
     for i = 1, #key do
         local b = key:byte(i)
@@ -1272,17 +1302,70 @@ local function cover_done(path, file)
     mp.commandv("script-message", "thumbz-cover", path, file or "")
 end
 
+-- scaled and cropped to fill w x h
+local function cover_filters(w, h, hdr)
+    local chain = string.format("scale=w=%d:h=%d:force_original_aspect_ratio=increase:flags=%s,crop=w=%d:h=%d",
+                                w, h, o.scaler, w, h)
+    if hdr then return "lavfi=[" .. chain .. "," .. tone_map_filters() .. "]" end
+    return chain .. ",format=bgra"
+end
+
+-- Runs inside each cover mpv. mpv turns rotated video after our filters, so for those
+-- the frame is scaled and cropped in its stored orientation. Whether the video is HDR
+-- is known only once a frame is decoded: then the frame is made again, tone mapped,
+-- and the cover is the last frame written.
+local cover_source = [=[
+local TURNED, HDR, HDR_TURNED = %q, %q, %q
+local turned = false
+mp.add_hook("on_preloaded", 50, function()
+    for _, track in ipairs(mp.get_property_native("track-list") or {}) do
+        if track.type == "video" and not track.albumart then
+            turned = ((track["demux-rotation"] or 0) %% 180) == 90
+            break
+        end
+    end
+    if turned then mp.set_property("vf", TURNED) end
+end)
+local mapped = false
+mp.register_event("playback-restart", function()
+    local p = mp.get_property_native("video-params")
+    if HDR ~= "" and not mapped and p and (p.gamma == "pq" or p.gamma == "hlg") then
+        mapped = true
+        if mp.set_property("vf", turned and HDR_TURNED or HDR) then
+            mp.commandv("seek", mp.get_property("time-pos"), "absolute+exact")
+            return
+        end
+    end
+    mp.command("quit")
+end)
+]=]
+
+local cover_helper = nil
+local function cover_script()
+    if not cover_helper then
+        cover_helper = base .. "_cover.lua"
+        local hdr = o.tone_mapping ~= "no"
+        local f = io.open(cover_helper, "wb")
+        if f then
+            f:write(string.format(cover_source, cover_filters(COVER_H, COVER_W),
+                                  hdr and cover_filters(COVER_W, COVER_H, true) or "",
+                                  hdr and cover_filters(COVER_H, COVER_W, true) or ""))
+            f:close()
+        end
+    end
+    return cover_helper
+end
+
 local function cover_args(path, out)
     mpv_candidates = mpv_candidates or find_mpv_candidates()
     local args = use_nice and {"nice", "-n", tostring(nice_levels[o.priority])} or {}
     for _, arg in ipairs({
         mpv_candidates[1], "--no-config", "--msg-level=all=no", "--input-terminal=no",
         "--load-scripts=no", "--osc=no", "--ytdl=no", "--input-default-bindings=no",
-        "--start=20%", "--frames=1", "--hr-seek=no", "--aid=no", "--sid=no",
-        "--vd-lavc-skiploopfilter=all", "--vd-lavc-fast",
-        "--vd-lavc-threads=" .. math.floor(o.threads), "--hwdec=" .. renderer_hwdec(),
-        string.format("--vf=scale=w=%d:h=%d:force_original_aspect_ratio=increase:flags=%s,crop=w=%d:h=%d,format=bgra",
-                      COVER_W, COVER_H, o.scaler, COVER_W, COVER_H),
+        "--pause", "--start=20%", "--hr-seek=no", "--aid=no", "--sid=no",
+        -- one frame: the CPU decodes it sooner than a hardware decoder starts up
+        "--vd-lavc-fast", "--vd-lavc-threads=" .. math.floor(o.threads), "--hwdec=no",
+        "--vf=" .. cover_filters(COVER_W, COVER_H), "--scripts=" .. cover_script(),
         "--ovc=rawvideo", "--of=rawvideo", "--o=" .. out,
     }) do args[#args + 1] = arg end
     for _, name in ipairs({"load-stats-overlay", "load-auto-profiles", "load-select", "load-commands",
@@ -1317,10 +1400,11 @@ local function next_cover()
             if f then f:close() end
             os.remove(tmp)
             local ok = false
-            if data and #data == COVER_W * COVER_H * 4 then
+            local n = COVER_W * COVER_H * 4
+            if data and #data >= n and #data % n == 0 then
                 local out = io.open(final, "wb")
                 if out then
-                    out:write(round_corners(data))
+                    out:write(round_corners(data:sub(-n)))
                     out:close()
                     ok = true
                 end
