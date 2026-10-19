@@ -307,7 +307,8 @@ local user_opts = {
     fullscreen_mbtn_right_command = "cycle window-maximized",
 
     -- info button mouse actions
-    info_mbtn_left_command = "script-binding stats/display-page-1-toggle",
+    info_mbtn_left_command = "script-message show_danmaku_keyboard",
+    info_mbtn_right_command = "script-message open_add_total_menu",
 
     -- ontop (pin) button mouse actions
     ontop_mbtn_left_command = "osd-msg cycle ontop",
@@ -748,7 +749,7 @@ local function build_icons(theme_name, style)
         screenshot      = o("photo_camera"),
         ontop_on        = o("pip"),
         ontop_off       = o("pip_exit"),
-        info            = o("info"),
+        info            = o("subtitles_filled"),
         fullscreen      = o("fullscreen"),
         fullscreen_exit = o("fullscreen_exit"),
 

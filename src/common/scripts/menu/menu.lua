@@ -1913,50 +1913,57 @@ local function open_windows_primary(multi, folder, save, default_name, src)
     local was_ontop = mp.get_property_native("ontop")
     if was_ontop then mp.set_property_native("ontop", false) end
 
+    -- 重写：使用 table.concat 逐行构建 PowerShell 脚本，彻底避免 Lua 长字符串拼接导致的换行丢失问题
     local script
     if folder then
-        script = [[& {
-    Trap { Write-Error -ErrorRecord $_; Exit 1 }
-    Add-Type -AssemblyName System.Windows.Forms
-    $u8 = [System.Text.Encoding]::UTF8
-    $out = [Console]::OpenStandardOutput()
-    $fbd = New-Object -TypeName System.Windows.Forms.FolderBrowserDialog
-    $fbd.ShowNewFolderButton = $true
-    If ($fbd.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
-        $u8filename = $u8.GetBytes("$($fbd.SelectedPath)`n")
-        $out.Write($u8filename, 0, $u8filename.Length)
-    }
-}]]
+        script = table.concat({
+            '& {',
+            '    Trap { Write-Error -ErrorRecord $_; Exit 1 }',
+            '    Add-Type -AssemblyName System.Windows.Forms',
+            '    $u8 = [System.Text.Encoding]::UTF8',
+            '    $out = [Console]::OpenStandardOutput()',
+            '    $fbd = New-Object -TypeName System.Windows.Forms.FolderBrowserDialog',
+            '    $fbd.ShowNewFolderButton = $true',
+            '    If ($fbd.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {',
+            '        $u8filename = $u8.GetBytes("$($fbd.SelectedPath)`n")',
+            '        $out.Write($u8filename, 0, $u8filename.Length)',
+            '    }',
+            '}'
+        }, '\n')
     elseif save then
         local name = tostring(default_name or 'file'):gsub('\\', '\\\\'):gsub('"', '\\"')
-        script = [[& {
-    Trap { Write-Error -ErrorRecord $_; Exit 1 }
-    Add-Type -AssemblyName PresentationFramework
-    $u8 = [System.Text.Encoding]::UTF8
-    $out = [Console]::OpenStandardOutput()
-    $sfd = New-Object -TypeName Microsoft.Win32.SaveFileDialog
-    $sfd.FileName = "]] .. name .. [["
-    If ($sfd.ShowDialog() -eq $true) {
-        $u8filename = $u8.GetBytes("$($sfd.FileName)`n")
-        $out.Write($u8filename, 0, $u8filename.Length)
-    }
-}]]
+        script = table.concat({
+            '& {',
+            '    Trap { Write-Error -ErrorRecord $_; Exit 1 }',
+            '    Add-Type -AssemblyName PresentationFramework',
+            '    $u8 = [System.Text.Encoding]::UTF8',
+            '    $out = [Console]::OpenStandardOutput()',
+            '    $sfd = New-Object -TypeName Microsoft.Win32.SaveFileDialog',
+            '    $sfd.FileName = "' .. name .. '"',
+            '    If ($sfd.ShowDialog() -eq $true) {',
+            '        $u8filename = $u8.GetBytes("$($sfd.FileName)`n")',
+            '        $out.Write($u8filename, 0, $u8filename.Length)',
+            '    }',
+            '}'
+        }, '\n')
     else
         local multi_line = multi and '$true' or '$false'
-        script = [[& {
-    Trap { Write-Error -ErrorRecord $_; Exit 1 }
-    Add-Type -AssemblyName PresentationFramework
-    $u8 = [System.Text.Encoding]::UTF8
-    $out = [Console]::OpenStandardOutput()
-    $ofd = New-Object -TypeName Microsoft.Win32.OpenFileDialog
-    $ofd.Multiselect = ]] .. multi_line .. [[
-    If ($ofd.ShowDialog() -eq $true) {
-        ForEach ($filename in $ofd.FileNames) {
-            $u8filename = $u8.GetBytes("$filename`n")
-            $out.Write($u8filename, 0, $u8filename.Length)
-        }
-    }
-}]]
+        script = table.concat({
+            '& {',
+            '    Trap { Write-Error -ErrorRecord $_; Exit 1 }',
+            '    Add-Type -AssemblyName PresentationFramework',
+            '    $u8 = [System.Text.Encoding]::UTF8',
+            '    $out = [Console]::OpenStandardOutput()',
+            '    $ofd = New-Object -TypeName Microsoft.Win32.OpenFileDialog',
+            '    $ofd.Multiselect = ' .. multi_line,
+            '    If ($ofd.ShowDialog() -eq $true) {',
+            '        ForEach ($filename in $ofd.FileNames) {',
+            '            $u8filename = $u8.GetBytes("$filename`n")',
+            '            $out.Write($u8filename, 0, $u8filename.Length)',
+            '        }',
+            '    }',
+            '}'
+        }, '\n')
     end
 
     local ok_call, res = pcall(utils.subprocess, {
