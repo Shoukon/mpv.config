@@ -29,8 +29,8 @@
 - **Timeline Thumbnail Previews** — Preview video frames directly on the seekbar.
 - **Online Subtitles & Danmaku** — Built-in online Chinese subtitle search and danmaku loading from multiple sources.
 - **Anime4K Upscaling** — Enhance video quality in real time with Anime4K.
-- **Multiple Video Shaders** — Supports a wide range of video shaders and filters. [View the Shader Guide](https://mpvConfig.github.io/docs/en/shaders.html).
-- **Frame Interpolation** — Enjoy smoother playback with multiple interpolation modes.
+- **Multiple Video Shaders** — Supports a wide range of video shaders and filters. ⇢ [View the Shader Guide](https://mpvConfig.github.io/docs/en/shaders.html).
+- **Frame Interpolation** — Enjoy smoother playback with multiple interpolation modes. ⇢ [Frame Interpolation Guide](https://mpvconfig.github.io/docs/en/Interpolation.html)
 - **On-Demand Video Filters** — Load Anime4K, FSRCNNX, CuNNy, ArtCNN, and other filters directly from the right-click menu.
 - **360° VR Support** — Supports 360° VR panoramic videos.
 - **Visual Audio & Video Controls** — Easily adjust the EQ, switch audio channels and decoding methods, enable automatic HDR, and fine-tune colors.
