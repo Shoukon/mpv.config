@@ -1,4 +1,4 @@
-# Ready-to-Use Configuration Files, Elegant UI Themes & Useful Plugins for mpv (Windows, macOS, Linux)
+# The configuration file of the mpv player with modern themes and supports Windows, macOS, Linux
 
 <p align="center">
   <img alt="mpv 0.40+" src="https://img.shields.io/badge/mpv-0.40%2B-2b2d33?style=flat-square&labelColor=8934D9">
