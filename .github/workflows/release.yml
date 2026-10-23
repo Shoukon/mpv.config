@@ -1,12 +1,7 @@
 name: Auto Build and Release
 
+# 手动触发
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "src/**"
-      - "build.js"
   workflow_dispatch:
 
 jobs:
@@ -15,53 +10,57 @@ jobs:
 
     permissions:
       contents: write
+      pull-requests: read # 需要读取 PR 的权限
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # 必须为 0，否则拿不到历史 git tag 和 commit
 
       # ---------- 版本生成和 Release Notes ----------
       - name: Generate Version and Release Notes
         id: release_info
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
 
-          # 获取最新 Tag
+          # 1. 获取最新 Tag
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || true)
-
           if [ -z "$LAST_TAG" ]; then
             LAST_TAG="v1.0.0"
           fi
-
           echo "Last Tag: $LAST_TAG"
 
-          # 自动递增版本号
+          # 2. 自动递增版本号 (Patch + 1)
           VERSION_NUM=${LAST_TAG#v}
           MAJOR_MINOR=${VERSION_NUM%.*}
           PATCH=${VERSION_NUM##*.}
-
           NEW_PATCH=$((PATCH + 1))
           NEW_TAG="v${MAJOR_MINOR}.${NEW_PATCH}"
-
           echo "New Tag: $NEW_TAG"
-
           echo "NEW_TAG=$NEW_TAG" >> "$GITHUB_OUTPUT"
 
-          # 获取 Commit 日志：排除 README.md / README_en.md 相关文件变更
-          if git rev-parse "$LAST_TAG" >/dev/null 2>&1; then
-            COMMITS=$(git log "$LAST_TAG"..HEAD --pretty=format:"- %s" -- . ':(exclude)README.md' ':(exclude)README_en.md')
-          else
-            COMMITS=$(git log --pretty=format:"- %s" -- . ':(exclude)README.md' ':(exclude)README_en.md')
-          fi
+          # 3. 抓取并格式化“别人的 PR”
+          # 获取从上一个 tag 到当前的所有已合并 PR
+          PR_LOGS=$(gh pr list --state merged --search "merged:>${LAST_TAG}" --json title,number,author --template '{{range .}}- {{.title}} by @{{.author.login}} in #{{.number}}{{"\n"}}{{end}}' 2>/dev/null || true)
 
-          if [ -z "$COMMITS" ]; then
+          # 4. 抓取“你自己的 push”（普通 commit）
+          # 使用 git log 抓取，并过滤掉 GitHub 自动生成的 PR 合并信息（Merge pull request 等噪音）
+          PUSH_LOGS=$(git log "$LAST_TAG"..HEAD --pretty=format:"- %s" -- . ':(exclude)README.md' ':(exclude)README_en.md' | \
+            grep -v -E "Merge pull request|Merge branch" || true)
+
+          # 5. 组装最终的更新日志
+          if [ -z "$PR_LOGS$PUSH_LOGS" ]; then
             COMMITS="- 自动更新配置与脚本"
+          else
+            # 使用 printf 防止 echo 吞掉换行符
+            COMMITS=$(printf "%s\n%s" "$PUSH_LOGS" "$PR_LOGS")
           fi
 
-          # 生成 Release 描述
+          # 6. 生成 Release 描述文本
           cat > release_body.txt <<EOF
           ### UI主题皮肤包含：\`modernz\`、\`modern_glass\` 和 \`uosc\` + 多种菜单风格
 
@@ -72,7 +71,7 @@ jobs:
           > [!TIP]
           >
           > - 请选择喜欢的某一套下载，每一个压缩包都已包含所有配置文件，解压放到配置文件夹下，重启播放器即可
-          > - Note: \`UIName_language.zip\` 前缀为UI主题名称，后缀为不同的语言，**中文版建议下载 `_zh.zip` 后缀版本**。 \`modern_glass\` 是模拟液态玻璃UI比较吃性能，建议在性能较好的设备上使用。
+          > - Note: \`UIName_language.zip\` 前缀为UI主题名称，后缀为不同的语言，**中文版建议下载 \`_zh.zip\` 后缀版本**。 \`modern_glass\` 是模拟液态玻璃UI比较吃性能，建议在性能较好的设备上使用。
           > - 不想折腾教程的 ⇢ [懒人整合安装包解压直接用，所有功能一致](https://pan.quark.cn/s/44d4b871af74)
 
           ---
@@ -81,7 +80,8 @@ jobs:
 
           EOF
 
-          echo "$COMMITS" >> release_body.txt
+          # 将处理好的提交记录追加到文件
+          echo -e "$COMMITS" >> release_body.txt
 
       # ---------- 设置 Node.js 环境 ----------
       - name: Setup Node.js
@@ -93,13 +93,13 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # ---------- 替换原有的 Create ZIP Archives 步骤 ----------
+      # ---------- 构建压缩包 ----------
       - name: Build ZIP Archives with Node.js
         run: node build.js
         env:
           RELEASE_VERSION: ${{ steps.release_info.outputs.NEW_TAG }}
 
-      # ---------- 创建 GitHub Release（文件路径改为 dist/*.zip） ----------
+      # ---------- 创建 GitHub Release ----------
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
